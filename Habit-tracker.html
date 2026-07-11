@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>چک‌لیست روزانه</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    background: #f7f5f0;
+    margin: 0;
+    padding: 24px 16px 60px;
+    direction: rtl;
+    color: #2c2c2a;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; }
+  h1 { font-size: 1.3rem; font-weight: 700; margin-bottom: 4px; }
+  .date { font-size: 0.85rem; color: #888780; margin-bottom: 16px; }
+
+  .tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+  .tab-btn {
+    flex: 1; padding: 10px; border-radius: 12px; border: 1px solid #e5e2d8;
+    background: #fff; color: #5f5e5a; font-family: inherit; font-size: 0.85rem;
+    font-weight: 500; cursor: pointer;
+  }
+  .tab-btn.active { background: #2c2c2a; color: #fff; border-color: #2c2c2a; }
+
+  .habit-row {
+    display: flex; align-items: center; gap: 12px;
+    background: #fff; border: 1px solid #e5e2d8;
+    border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
+  }
+  .habit-check {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 2px solid #b4b2a9; flex-shrink: 0; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; transition: all .15s;
+  }
+  .habit-check.done { background: #639922; border-color: #639922; color: #fff; }
+  .habit-info { flex: 1; }
+  .habit-name { font-weight: 500; font-size: 0.98rem; }
+  .habit-streak { font-size: 0.78rem; color: #888780; margin-top: 2px; }
+  .habit-del { background: none; border: none; color: #b4b2a9; font-size: 1rem; cursor: pointer; padding: 4px 8px; }
+  .habit-del:hover { color: #d85a30; }
+  .add-row { display: flex; gap: 8px; margin-top: 18px; }
+  .add-row input {
+    flex: 1; padding: 12px 14px; border-radius: 12px;
+    border: 1px solid #e5e2d8; font-family: inherit; font-size: 0.9rem;
+  }
+  .add-row button {
+    padding: 0 18px; border-radius: 12px; border: none;
+    background: #2c2c2a; color: #fff; font-weight: 500; cursor: pointer;
+  }
+  .empty { text-align: center; color: #b4b2a9; font-size: 0.85rem; padding: 30px 0; }
+  .summary { display: flex; gap: 10px; margin-bottom: 20px; }
+  .summary-card {
+    flex: 1; background: #eaf3de; border-radius: 12px; padding: 12px;
+    text-align: center;
+  }
+  .summary-num { font-size: 1.4rem; font-weight: 700; color: #3b6d11; }
+  .summary-label { font-size: 0.72rem; color: #5f5e5a; margin-top: 2px; }
+
+  /* تقویم */
+  .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .cal-nav button {
+    background: #fff; border: 1px solid #e5e2d8; border-radius: 10px;
+    width: 34px; height: 34px; cursor: pointer; font-size: 1rem; color: #5f5e5a;
+  }
+  .cal-nav .cal-label { font-weight: 500; font-size: 0.95rem; }
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
+    margin-bottom: 20px;
+  }
+  .cal-dow { text-align: center; font-size: 0.7rem; color: #b4b2a9; padding-bottom: 4px; }
+  .cal-day {
+    aspect-ratio: 1; border-radius: 10px; background: #fff;
+    border: 1px solid #e5e2d8; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; cursor: pointer;
+    font-size: 0.78rem; position: relative;
+  }
+  .cal-day.empty-cell { background: transparent; border: none; cursor: default; }
+  .cal-day.today { border: 2px solid #2c2c2a; }
+  .cal-day .dnum { font-weight: 500; }
+  .cal-day .ddot { width: 5px; height: 5px; border-radius: 50%; margin-top: 3px; }
+  .cal-day.level-0 .ddot { background: transparent; }
+  .cal-day.level-1 { background: #eaf3de; }
+  .cal-day.level-2 { background: #c0dd97; }
+  .cal-day.level-full { background: #97c459; }
+
+  .day-detail {
+    background: #fff; border: 1px solid #e5e2d8; border-radius: 14px;
+    padding: 16px; margin-top: 4px;
+  }
+  .day-detail h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 10px; }
+  .day-detail .item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.88rem; padding: 6px 0;
+    color: #5f5e5a;
+  }
+  .day-detail .item.done { color: #2c2c2a; }
+  .day-detail .item .mark { width: 16px; text-align: center; }
+  .repeat-btn {
+    margin-top: 14px; width: 100%; padding: 10px; border-radius: 10px;
+    border: none; background: #2c2c2a; color: #fff; font-family: inherit;
+    font-size: 0.85rem; font-weight: 500; cursor: pointer;
+  }
+  .no-select { text-align: center; color: #b4b2a9; font-size: 0.85rem; padding: 16px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>چک‌لیست روزانه</h1>
+  <div class="date" id="todayLabel"></div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="today">امروز</button>
+    <button class="tab-btn" data-tab="calendar">تقویم</button>
+  </div>
+
+  <!-- تب امروز -->
+  <div id="todayView">
+    <div class="summary">
+      <div class="summary-card">
+        <div class="summary-num" id="doneCount">0</div>
+        <div class="summary-label">امروز انجام شده</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-num" id="bestStreak">0</div>
+        <div class="summary-label">بهترین استریک</div>
+      </div>
+    </div>
+
+    <div id="list"></div>
+
+    <div class="add-row">
+      <input id="newHabit" placeholder="مثلاً: ورزش، کتاب‌خوانی، نوشتن..." />
+      <button id="addBtn">افزودن</button>
+    </div>
+  </div>
+
+  <!-- تب تقویم -->
+  <div id="calendarView" style="display:none;">
+    <div class="cal-nav">
+      <button id="calPrev">‹</button>
+      <div class="cal-label" id="calLabel"></div>
+      <button id="calNext">›</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div id="dayDetail"></div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'habits-data';
+const pad = n => String(n).padStart(2, '0');
+const toKey = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const todayKey = () => toKey(new Date());
+
+let state = { habits: [], logs: {} };
+let currentTab = 'today';
+let calCursor = new Date();
+let selectedDay = null;
+
+async function load() {
+  try {
+    const res = await window.storage.get(STORAGE_KEY);
+    if (res && res.value) state = JSON.parse(res.value);
+  } catch (e) {
+    state = {
+      habits: [
+        { id: 'h1', name: 'ورزش' },
+        { id: 'h2', name: 'کتاب‌خوانی' },
+        { id: 'h3', name: 'درس خوندن' },
+        { id: 'h4', name: 'نوشتن' }
+      ],
+      logs: {}
+    };
+    await save();
+  }
+  renderAll();
+}
+
+async function save() {
+  try {
+    await window.storage.set(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.error('ذخیره نشد', e);
+  }
+}
+
+function computeStreak(habitId) {
+  let streak = 0;
+  let d = new Date();
+  while (true) {
+    const key = toKey(d);
+    if (state.logs[key] && state.logs[key][habitId]) {
+      streak++;
+      d.setDate(d.getDate() - 1);
+    } else break;
+  }
+  return streak;
+}
+
+/* ── تب امروز ── */
+function renderToday() {
+  const tKey = todayKey();
+  document.getElementById('todayLabel').textContent =
+    new Date().toLocaleDateString('fa-IR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+
+  if (state.habits.length === 0) {
+    list.innerHTML = '<div class="empty">هنوز عادتی اضافه نکردی — از پایین شروع کن</div>';
+  }
+
+  let doneToday = 0, best = 0;
+
+  state.habits.forEach(h => {
+    const isDone = !!(state.logs[tKey] && state.logs[tKey][h.id]);
+    if (isDone) doneToday++;
+    const streak = computeStreak(h.id);
+    if (streak > best) best = streak;
+
+    const row = document.createElement('div');
+    row.className = 'habit-row';
+    row.innerHTML = `
+      <div class="habit-check ${isDone ? 'done' : ''}" data-id="${h.id}">${isDone ? '✓' : ''}</div>
+      <div class="habit-info">
+        <div class="habit-name">${h.name}</div>
+        <div class="habit-streak">${streak > 0 ? streak + ' روز پشت‌سرهم' : 'هنوز شروع نشده'}</div>
+      </div>
+      <button class="habit-del" data-del="${h.id}">✕</button>
+    `;
+    list.appendChild(row);
+  });
+
+  document.getElementById('doneCount').textContent = doneToday + ' / ' + state.habits.length;
+  document.getElementById('bestStreak').textContent = best;
+
+  list.querySelectorAll('.habit-check').forEach(el => {
+    el.addEventListener('click', async () => {
+      const id = el.dataset.id;
+      if (!state.logs[tKey]) state.logs[tKey] = {};
+      state.logs[tKey][id] = !state.logs[tKey][id];
+      await save();
+      renderAll();
+    });
+  });
+
+  list.querySelectorAll('[data-del]').forEach(el => {
+    el.addEventListener('click', async () => {
+      state.habits = state.habits.filter(h => h.id !== el.dataset.del);
+      await save();
+      renderAll();
+    });
+  });
+}
+
+/* ── تب تقویم ── */
+const dowNames = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
+
+function renderCalendar() {
+  const label = document.getElementById('calLabel');
+  label.textContent = calCursor.toLocaleDateString('fa-IR', { year: 'numeric', month: 'long' });
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  dowNames.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cal-dow';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const year = calCursor.getFullYear();
+  const month = calCursor.getMonth();
+  const firstOfMonth = new Date(year, month, 1);
+  const startOffset = (firstOfMonth.getDay() + 1) % 7;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const tKey = todayKey();
+  const totalHabits = state.habits.length || 1;
+
+  for (let i = 0; i < startOffset; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-day empty-cell';
+    grid.appendChild(cell);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const d = new Date(year, month, day);
+    const key = toKey(d);
+    const dayLog = state.logs[key] || {};
+    const doneCount = Object.values(dayLog).filter(Boolean).length;
+    const ratio = doneCount / totalHabits;
+
+    let level = 'level-0';
+    if (doneCount > 0) level = ratio >= 1 ? 'level-full' : ratio >= 0.5 ? 'level-2' : 'level-1';
+
+    const cell = document.createElement('div');
+    cell.className = `cal-day ${level}${key === tKey ? ' today' : ''}`;
+    cell.dataset.key = key;
+    cell.innerHTML = `<span class="dnum">${day}</span><span class="ddot"></span>`;
+    grid.appendChild(cell);
+  }
+
+  grid.querySelectorAll('.cal-day:not(.empty-cell)').forEach(el => {
+    el.addEventListener('click', () => {
+      selectedDay = el.dataset.key;
+      renderDayDetail();
+    });
+  });
+
+  renderDayDetail();
+}
+
+function renderDayDetail() {
+  const box = document.getElementById('dayDetail');
+  if (!selectedDay) {
+    box.innerHTML = '<div class="no-select">روی یه روز کلیک کن تا ببینی چیکار کرده بودی</div>';
+    return;
+  }
+  const dayLog = state.logs[selectedDay] || {};
+  const d = new Date(selectedDay + 'T00:00:00');
+  const label = d.toLocaleDateString('fa-IR', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  const itemsHtml = state.habits.map(h => {
+    const done = !!dayLog[h.id];
+    return `<div class="item ${done ? 'done' : ''}">
+      <span class="mark">${done ? '✓' : '—'}</span>${h.name}
+    </div>`;
+  }).join('');
+
+  box.innerHTML = `
+    <div class="day-detail">
+      <h3>${label}</h3>
+      ${state.habits.length ? itemsHtml : '<div class="no-select">عادتی ثبت نشده</div>'}
+      <button class="repeat-btn" id="repeatBtn">تکرار همین برنامه برای امروز</button>
+    </div>
+  `;
+
+  document.getElementById('repeatBtn')?.addEventListener('click', async () => {
+    const tKey = todayKey();
+    if (!state.logs[tKey]) state.logs[tKey] = {};
+    state.habits.forEach(h => {
+      if (dayLog[h.id]) state.logs[tKey][h.id] = true;
+    });
+    await save();
+    switchTab('today');
+    renderAll();
+  });
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.getElementById('todayView').style.display = tab === 'today' ? 'block' : 'none';
+  document.getElementById('calendarView').style.display = tab === 'calendar' ? 'block' : 'none';
+}
+
+function renderAll() {
+  renderToday();
+  renderCalendar();
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
+
+document.getElementById('calPrev').addEventListener('click', () => {
+  calCursor.setMonth(calCursor.getMonth() - 1);
+  renderCalendar();
+});
+document.getElementById('calNext').addEventListener('click', () => {
+  calCursor.setMonth(calCursor.getMonth() + 1);
+  renderCalendar();
+});
+
+document.getElementById('addBtn').addEventListener('click', async () => {
+  const input = document.getElementById('newHabit');
+  const name = input.value.trim();
+  if (!name) return;
+  state.habits.push({ id: 'h' + Date.now(), name });
+  input.value = '';
+  await save();
+  renderAll();
+});
+document.getElementById('newHabit').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('addBtn').click();
+});
+
+load();
+</script>
+</body>
+</html>
