@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>برنامه‌ی کلاسی من</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="wrap">
+    <div class="topbar">
+      <a class="linkbtn" href="add-classes.html">+ افزودن درس</a>
+      <button class="linkbtn" id="logoutBtn" type="button">خروج</button>
+    </div>
+
+    <h1>برنامه‌ی کلاسی من</h1>
+    <p class="sub" id="sub"></p>
+
+    <div class="tabs" id="tabs" role="tablist" aria-label="روزهای هفته"></div>
+    <div id="slots" role="tabpanel" aria-live="polite"></div>
+    <p id="msg" class="msg err" role="alert"></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+  <script>
+    const $ = id => document.getElementById(id);
+    let classes = [];
+    let selected = todayIndex();
+    const today = todayIndex();
+
+    async function load() {
+      const { data, error } = await db
+        .from('my_classes')
+        .select('*')
+        .order('day_of_week')
+        .order('start_time');
+      if (error) { $('msg').textContent = 'برنامه بارگذاری نشد. صفحه رو دوباره باز کن.'; return; }
+      classes = data;
+
+      // اگه همه‌ی کلاس‌ها حذف شدن، برگرد به صفحه‌ی ثبت
+      if (!classes.length) { location.replace('add-classes.html'); return; }
+
+      // اگه امروز کلاس نداره، اولین روزی که کلاس داره رو باز کن
+      if (!classes.some(c => c.day_of_week === today)) selected = classes[0].day_of_week;
+
+      renderTabs();
+      renderSlots();
+    }
+
+    function renderTabs() {
+      $('tabs').innerHTML = DAYS.map((name, d) => {
+        const has = classes.some(c => c.day_of_week === d);
+        return `<button class="tab" role="tab" data-d="${d}" aria-selected="${d === selected}">
+          ${has ? '<i class="dot"></i>' : ''}${name}
+          ${d === today ? '<span class="today">امروز</span>' : ''}
+        </button>`;
+      }).join('');
+      $('tabs').querySelectorAll('.tab').forEach(b =>
+        b.addEventListener('click', () => { selected = Number(b.dataset.d); renderTabs(); renderSlots(); })
+      );
+      const sel = $('tabs').querySelector('[aria-selected="true"]');
+      if (sel) sel.scrollIntoView({ inline: 'center', block: 'nearest' });
+    }
+
+    function renderSlots() {
+      const items = classes.filter(c => c.day_of_week === selected);
+      const total = classes.length;
+      $('sub').textContent = selected === today ? 'کلاس‌های امروز' : `کلاس‌های ${DAYS[selected]}`;
+
+      if (!items.length) {
+        $('slots').innerHTML = `<div class="empty">${DAYS[selected]} کلاسی نداری.</div>`;
+        return;
+      }
+
+      $('slots').innerHTML = items.map(c => `
+        <article class="slot">
+          <div class="time">${toFA(c.start_time.slice(0, 5))}<small>تا ${toFA(c.end_time.slice(0, 5))}</small></div>
+          <div>
+            <div class="name">${esc(c.title)}</div>
+            ${c.instructor ? `<div class="meta">${esc(c.instructor)}</div>` : ''}
+            ${c.room ? `<span class="place">${esc(c.room)}</span>` : ''}
+          </div>
+          <button class="del" data-id="${c.id}" aria-label="حذف ${esc(c.title)}">حذف</button>
+        </article>
+      `).join('');
+
+      $('slots').querySelectorAll('.del').forEach(b =>
+        b.addEventListener('click', () => removeClass(b.dataset.id))
+      );
+    }
+
+    async function removeClass(id) {
+      if (!confirm('این کلاس حذف بشه؟')) return;
+      const { error } = await db.from('my_classes').delete().eq('id', id);
+      if (error) { $('msg').textContent = 'حذف نشد. دوباره تلاش کن.'; return; }
+      await load();
+    }
+
+    $('logoutBtn').addEventListener('click', logout);
+
+    (async () => {
+      if (!(await requireSession())) return;
+      load();
+    })();
+  </script>
+</body>
+</html>
