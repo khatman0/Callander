@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>برنامه‌ی کلاسی من | ثبت درس‌ها</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="wrap">
+    <div class="topbar">
+      <a id="backLink" class="linkbtn" href="schedule.html" hidden>← برگشت به برنامه</a>
+      <button class="linkbtn" id="logoutBtn" type="button">خروج</button>
+    </div>
+
+    <h1>درس‌هات رو ثبت کن</h1>
+    <p class="sub">برای هر درس، روزهای برگزاری، ساعت و مکان کلاس رو بنویس. اگه درس دو جلسه در هفته داره، هر دو روز رو انتخاب کن.</p>
+
+    <div id="list"></div>
+
+    <button id="addBtn" class="btn ghost" type="button">+ افزودن درس دیگه</button>
+    <button id="saveBtn" class="btn" type="button">ذخیره و دیدن برنامه</button>
+    <p id="msg" class="msg" role="alert"></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+  <script>
+    const $ = id => document.getElementById(id);
+    const list = $('list');
+    let counter = 0;
+
+    const msg = (text, type = 'err') => { $('msg').textContent = text; $('msg').className = 'msg ' + type; };
+
+    function addCard() {
+      const id = ++counter;
+      const card = document.createElement('fieldset');
+      card.className = 'card';
+      card.innerHTML = `
+        <label for="t${id}">نام درس</label>
+        <input id="t${id}" type="text" data-f="title" maxlength="80">
+
+        <label for="i${id}">استاد (اختیاری)</label>
+        <input id="i${id}" type="text" data-f="instructor" maxlength="80">
+
+        <label>روزهای برگزاری</label>
+        <div class="days">
+          ${DAYS.map((name, d) => `
+            <label class="day-pick"><input type="checkbox" data-f="day" value="${d}"><span>${name}</span></label>
+          `).join('')}
+        </div>
+
+        <div class="row2">
+          <div>
+            <label for="s${id}">ساعت شروع</label>
+            <input id="s${id}" type="time" data-f="start" class="ltr">
+          </div>
+          <div>
+            <label for="e${id}">ساعت پایان</label>
+            <input id="e${id}" type="time" data-f="end" class="ltr">
+          </div>
+        </div>
+
+        <label for="r${id}">مکان کلاس</label>
+        <input id="r${id}" type="text" data-f="room" maxlength="80" placeholder="مثلاً ساختمان ۲، کلاس ۱۰۵">
+
+        <button type="button" class="linkbtn danger remove">حذف این درس</button>
+      `;
+      card.querySelector('.remove').addEventListener('click', () => {
+        if (list.children.length > 1) card.remove();
+        else msg('حداقل یک درس باید باشه.');
+      });
+      list.appendChild(card);
+    }
+
+    // جمع‌کردن و اعتبارسنجی فرم
+    function collect() {
+      const rows = [];
+      const cards = [...list.children];
+      for (let i = 0; i < cards.length; i++) {
+        const c = cards[i];
+        const get = f => c.querySelector(`[data-f="${f}"]`).value.trim();
+        const title = get('title');
+        const days = [...c.querySelectorAll('[data-f="day"]:checked')].map(x => Number(x.value));
+        const start = get('start');
+        const end = get('end');
+
+        const empty = !title && !days.length && !start && !end && !get('room') && !get('instructor');
+        if (empty && cards.length > 1) continue; // کارت خالی اضافه رو نادیده بگیر
+
+        const n = toFA(i + 1);
+        if (!title) throw new Error(`درس شماره‌ی ${n}: نام درس رو بنویس.`);
+        if (!days.length) throw new Error(`درس «${title}»: حداقل یک روز انتخاب کن.`);
+        if (!start || !end) throw new Error(`درس «${title}»: ساعت شروع و پایان رو وارد کن.`);
+        if (end <= start) throw new Error(`درس «${title}»: ساعت پایان باید بعد از ساعت شروع باشه.`);
+
+        days.forEach(d => rows.push({
+          title,
+          instructor: get('instructor') || null,
+          room: get('room') || null,
+          day_of_week: d,
+          start_time: start,
+          end_time: end
+        }));
+      }
+      if (!rows.length) throw new Error('حداقل یک درس کامل وارد کن.');
+      return rows;
+    }
+
+    async function save() {
+      msg('');
+      let rows;
+      try { rows = collect(); } catch (e) { msg(e.message); return; }
+
+      $('saveBtn').disabled = true;
+      const { error } = await db.from('my_classes').insert(rows);
+      if (error) {
+        msg('ذخیره نشد. دوباره تلاش کن.');
+        $('saveBtn').disabled = false;
+        return;
+      }
+      location.href = 'schedule.html';
+    }
+
+    $('addBtn').addEventListener('click', addCard);
+    $('saveBtn').addEventListener('click', save);
+    $('logoutBtn').addEventListener('click', logout);
+
+    (async () => {
+      if (!(await requireSession())) return;
+      addCard();
+      // اگه قبلاً درس ثبت کرده، دکمه‌ی برگشت رو نشون بده
+      try { if (await hasClasses()) $('backLink').hidden = false; } catch (e) {}
+    })();
+  </script>
+</body>
+</html>
