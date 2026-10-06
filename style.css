@@ -80,3 +80,9 @@ input:focus-visible, button:focus-visible, .day-pick input:focus-visible + span,
 }
 
 .hint { margin: 4px 0 0; font-size: .82rem; color: var(--muted); }
+
+/* هفته فرد / زوج */
+.day-item { display: inline-flex; align-items: center; gap: 4px; }
+.week-sel { font: inherit; font-size: .82rem; padding: 4px 6px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); }
+.week-sel[hidden] { display: none; }
+.badge { display: inline-block; margin-inline-start: 8px; padding: 0 8px; border-radius: 6px; font-size: .78rem; font-weight: 600; background: #e6eafc; color: var(--accent); vertical-align: middle; }
