@@ -49,9 +49,17 @@
         <label>روزهای برگزاری</label>
         <div class="days">
           ${DAYS.map((name, d) => `
-            <label class="day-pick"><input type="checkbox" data-f="day" value="${d}"><span>${name}</span></label>
+            <span class="day-item">
+              <label class="day-pick"><input type="checkbox" data-f="day" value="${d}"><span>${name}</span></label>
+              <select class="week-sel" data-f="week" aria-label="هفته‌های برگزاری ${name}" hidden>
+                <option value="all">هر هفته</option>
+                <option value="odd">هفته‌های فرد</option>
+                <option value="even">هفته‌های زوج</option>
+              </select>
+            </span>
           `).join('')}
         </div>
+        <p class="hint">بعد از تیک زدن هر روز، می‌تونی مشخص کنی هر هفته باشه یا فقط هفته‌های فرد یا زوج.</p>
 
         <div class="row2">
           <div>
@@ -73,6 +81,10 @@
         if (list.children.length > 1) card.remove();
         else msg('حداقل یک درس باید باشه.');
       });
+      // با تیک زدن هر روز، انتخاب هفته (هر هفته / فرد / زوج) کنارش نشون داده می‌شه
+      card.querySelectorAll('[data-f="day"]').forEach(cb => cb.addEventListener('change', () => {
+        cb.closest('.day-item').querySelector('[data-f="week"]').hidden = !cb.checked;
+      }));
       list.appendChild(card);
     }
 
@@ -84,7 +96,10 @@
         const c = cards[i];
         const get = f => c.querySelector(`[data-f="${f}"]`).value.trim();
         const title = get('title');
-        const days = [...c.querySelectorAll('[data-f="day"]:checked')].map(x => Number(x.value));
+        const days = [...c.querySelectorAll('[data-f="day"]:checked')].map(x => ({
+          d: Number(x.value),
+          week: x.closest('.day-item').querySelector('[data-f="week"]').value
+        }));
         const start = get('start');
         const end = get('end');
 
@@ -97,11 +112,12 @@
         if (!start || !end) throw new Error(`درس «${title}»: ساعت شروع و پایان رو وارد کن.`);
         if (end <= start) throw new Error(`درس «${title}»: ساعت پایان باید بعد از ساعت شروع باشه.`);
 
-        days.forEach(d => rows.push({
+        days.forEach(({ d, week }) => rows.push({
           title,
           instructor: get('instructor') || null,
           room: get('room') || null,
           day_of_week: d,
+          week_type: week,
           start_time: start,
           end_time: end
         }));
