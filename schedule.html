@@ -29,6 +29,8 @@
   <script>
     const $ = id => document.getElementById(id);
     let classes = [];
+    const weekBadge = w => w === 'odd' ? '<span class="badge">هفته‌های فرد</span>'
+                         : w === 'even' ? '<span class="badge">هفته‌های زوج</span>' : '';
     let selected = todayIndex();
     const today = todayIndex();
 
@@ -80,7 +82,7 @@
         <article class="slot">
           <div class="time">${toFA(c.start_time.slice(0, 5))}<small>تا ${toFA(c.end_time.slice(0, 5))}</small></div>
           <div>
-            <div class="name">${esc(c.title)}</div>
+            <div class="name">${esc(c.title)}${weekBadge(c.week_type)}</div>
             ${c.instructor ? `<div class="meta">${esc(c.instructor)}</div>` : ''}
             ${c.room ? `<span class="place">${esc(c.room)}</span>` : ''}
           </div>
