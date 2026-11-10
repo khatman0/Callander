@@ -80,13 +80,59 @@ footer{background:var(--blue);color:#fff;padding:2px 12px;font-size:12px;display
   .editor{height:300px;flex:none} .cw{min-height:240px}
   .files{max-height:140px}
 }
+
+[hidden]{display:none!important}
+.tabs button{margin:0;background:none;border:0;border-bottom:3px solid transparent;padding:2px 12px;color:var(--muted);font:inherit;cursor:pointer}
+.tabs button.on{color:var(--text);border-bottom-color:var(--orange)}
+.tabs button:focus-visible{outline:2px solid var(--blue)}
+.page{flex:1;overflow:auto;padding:16px;direction:rtl}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.wrap h1{margin:0;font-size:20px}
+.hint{margin:0;color:var(--muted)}
+details{background:var(--panel);border:1px solid var(--line);padding:6px 10px}
+.codebox{margin:6px 0 0;white-space:pre;overflow:auto;max-height:220px;text-align:left;font:13px/1.6 'JetBrains Mono','Vazirmatn',Consolas,monospace}
+#alg-in{width:100%;min-height:240px;padding:10px;background:var(--panel);color:var(--text);border:1px solid var(--line);font:inherit;line-height:1.9}
+.act,.act2{align-self:flex-start;border:1px solid var(--line);padding:6px 16px;font:inherit;cursor:pointer;background:#0072bd;color:#fff;border-radius:2px}
+.act2{background:var(--bar);color:var(--text)}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.res ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:4px}
+.res li{padding:4px 8px;border-inline-start:4px solid var(--line);background:var(--panel)}
+.res li.ok{border-color:var(--green)}.res li.bad{border-color:var(--err)}.res li.warn{border-color:var(--yellow)}
+.res li b{display:inline-block;width:1.2em}
+.verdict{padding:8px 12px;font-weight:600;border:1px solid}
+.v-ok{color:var(--green);border-color:var(--green)}.v-bad{color:var(--err);border-color:var(--err)}
+.tbl-wrap{overflow-x:auto}
+#tb{border-collapse:collapse;background:var(--panel)}
+#tb th,#tb td{border:1px solid var(--line);padding:4px 6px;text-align:center;unicode-bidi:normal}
+#tb th small{display:block;color:var(--muted);font-weight:400}
+#tb input{width:110px;text-align:center;direction:ltr;background:transparent;color:var(--text);border:0;font:inherit;padding:4px}
+#tb .x,.ctl button{background:var(--bar);color:var(--text);border:1px solid var(--line);cursor:pointer;font:inherit}
+.pal{display:flex;gap:8px;flex-wrap:wrap}
+.pal button{background:var(--panel);color:var(--text);border:1px solid var(--line);padding:6px 12px;font:inherit;cursor:pointer}
+.fc{display:flex;flex-direction:column;align-items:center;padding:8px}
+.fc .row{position:relative}
+.blk{position:relative;width:min(260px,62vw);height:56px}
+.blk.b-dec{height:84px}
+.blk svg{position:absolute;inset:0;width:100%;height:100%}
+.blk svg *{fill:var(--panel);stroke:var(--blue);stroke-width:2;vector-effect:non-scaling-stroke}
+.blk input{position:absolute;inset:0;margin:auto;width:70%;height:30px;text-align:center;background:transparent;color:var(--text);border:0;font:inherit}
+.blk.b-dec input{width:46%}
+.ctl{position:absolute;left:calc(100% + 8px);top:50%;transform:translateY(-50%);display:flex;gap:2px}
+.ctl button{width:26px;height:24px;padding:0}
+.arr{color:var(--blue);line-height:1;padding:2px 0}
+.empty{color:var(--muted)}
+.io{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.io label{display:flex;flex-direction:column;gap:4px;font-weight:600}
+.io textarea{padding:8px;background:var(--panel);color:var(--text);border:1px solid var(--line);font:inherit;font-weight:400}
+.wrap h2{margin:8px 0 0;font-size:16px}
+@media (max-width:600px){.io{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <header>
   <svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 17 8 8l4 4 3-9 8 14-7-3-4 6z" fill="#d95319"/><path d="M8 8l4 4 3-9-3 6z" fill="#edb120"/><path d="M12 12l-4 8 1 0 3-6z" fill="#0072bd"/></svg>
   <b>MATLAB R2026b – سایت من</b>
-  <nav class="tabs" aria-hidden="true"><span class="on">HOME</span><span>PLOTS</span><span>APPS</span></nav>
+  <nav class="tabs" aria-label="Pages"><button class="on" data-view="code">Code</button><button data-view="alg">الگوریتم</button><button data-view="tab">جدول</button><button data-view="flow">فلوچارت</button></nav>
   <button id="theme" aria-label="تغییر تم">Theme</button>
 </header>
 <div class="strip" role="toolbar" aria-label="Run">
@@ -120,6 +166,47 @@ footer{background:var(--blue);color:#fff;padding:2px 12px;font-size:12px;display
     </section>
     </div>
 </main>
+<div class="page" id="v-alg" hidden>
+  <div class="wrap">
+    <h1>الگوریتم</h1>
+    <p class="hint">کدی که در صفحه‌ی Code نوشته‌ای را به‌صورت مرحله‌های شماره‌دار و به فارسی بنویس. هر مرحله یک کار باشد: گرفتن ورودی، محاسبه یا نمایش. مثلاً «عدد اول را از کاربر بگیر».</p>
+    <details open><summary>کد فعلی</summary><pre class="codebox" dir="ltr" id="alg-code"></pre></details>
+    <textarea id="alg-in" placeholder="1. شروع&#10;2. ..."></textarea>
+    <button class="act" id="alg-go">بررسی الگوریتم</button>
+    <div class="res" id="alg-res"></div>
+  </div>
+</div>
+<div class="page" id="v-tab" hidden>
+  <div class="wrap">
+    <h1>جدول ورودی و خروجی</h1>
+    <details open><summary>کد فعلی</summary><pre class="codebox" dir="ltr" id="tab-code"></pre></details>
+    <p class="hint">بنویس برنامه چه چیزی از کاربر می‌گیرد و چه چیزی نشان می‌دهد. مثلاً «دو عدد از کاربر بگیر».</p>
+    <div class="io">
+      <label>ورودی<textarea id="io-i" rows="3"></textarea></label>
+      <label>خروجی<textarea id="io-o" rows="3"></textarea></label>
+    </div>
+    <button class="act" id="io-go">بررسی جدول</button>
+    <div class="res" id="io-res"></div>
+    <h2>تمرین با عدد (اختیاری)</h2>
+    <p class="hint">در هر ردیف برای ورودی‌ها عدد دلخواه بنویس و خروجی‌ها را دستی حساب کن. سایت کد را با ورودی‌های تو اجرا می‌کند و جواب تو را با خروجی برنامه مقایسه می‌کند.</p>
+    <div class="tbl-wrap"><table id="tb"></table></div>
+    <div class="btns"><button class="act2" id="tb-add">+ ردیف جدید</button><button class="act" id="tb-go">بررسی ردیف‌ها</button></div>
+    <div class="res" id="tb-res"></div>
+  </div>
+</div>
+<div class="page" id="v-flow" hidden>
+  <div class="wrap">
+    <h1>فلوچارت</h1>
+    <p class="hint">یک شکل انتخاب کن تا به انتهای فلوچارت اضافه شود، بعد داخلش را بنویس. با ↑ و ↓ جابه‌جایش کن و با ✕ حذفش کن.</p>
+    <details><summary>کد فعلی</summary><pre class="codebox" dir="ltr" id="flow-code"></pre></details>
+    <div class="pal" id="pal">
+      <button data-t="oval">⬭ شروع / پایان</button><button data-t="io">▱ ورودی / خروجی</button><button data-t="proc">▭ پردازش</button><button data-t="dec">◇ شرط</button>
+    </div>
+    <div class="fc" id="fc"></div>
+    <button class="act" id="fc-go">بررسی فلوچارت</button>
+    <div class="res" id="fc-res"></div>
+  </div>
+</div>
 <footer><span id="st">Ready</span><span>UTF-8 &nbsp; script &nbsp; Ln 1 Col 1</span></footer>
 
 <script>
@@ -601,6 +688,174 @@ window.addEventListener("focus",async()=>{
 $("bopen").onclick=openFile;$("bsave").onclick=saveFile;$("bdl").onclick=download;
 document.querySelectorAll("[data-cmd]").forEach(b=>b.onclick=()=>runCmd(b.dataset.cmd));
 $("theme").onclick=()=>{const r=document.documentElement;r.dataset.theme=getComputedStyle(r).colorScheme==="dark"?"light":"dark"};
+/*PAGES*/
+const SK="matlab-site-work";
+let WK={alg:"",rows:[],flow:[],io:{i:"",o:""}};
+try{const x=JSON.parse(localStorage.getItem(SK)||"null");if(x)WK=Object.assign(WK,x)}catch(e){}
+const saveW=()=>{try{localStorage.setItem(SK,JSON.stringify(WK))}catch(e){}};
+const fa=s=>s.replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/ي/g,"ی").replace(/ك/g,"ک");
+const att=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const hasTok=(t,v)=>new RegExp("(^|[^A-Za-z0-9_])"+v+"($|[^A-Za-z0-9_])").test(t);
+const STOP=["وارد","کنید","کن","را","عدد","مقدار","لطفا","لطفاً","از","به","برای","کاربر","بدهید","بنویسید"];
+function analyze(src){
+  const A={seq:[],ins:[],outs:[],msgs:0,vars:new Set()};
+  src.split(/\r?\n/).forEach(l=>splitStmts(l).forEach(s=>{
+    const t=s.t;if(NOOP.includes(word(t)))return;
+    let m=/^([A-Za-z_]\w*)\s*=(?!=)\s*input\s*\((.*)\)\s*$/.exec(t);
+    if(m){
+      const pm=/^\s*'((?:[^']|'')*)'/.exec(m[2]);
+      const kw=pm?fa(pm[1]).split(/[\s:؟?،,.]+/).filter(w=>w.length>=2&&!STOP.includes(w)):[];
+      const it={k:"in",v:m[1],kw,str:/,\s*'s'\s*$/.test(m[2])};
+      A.seq.push(it);A.ins.push(it);A.vars.add(m[1]);return}
+    m=/^([A-Za-z_]\w*)\s*=(?!=)\s*(.+)$/.exec(t);
+    if(m){A.seq.push({k:"calc",v:m[1],e:m[2]});A.vars.add(m[1]);return}
+    m=/^disp\s*\((.*)\)\s*$/.exec(t);
+    if(m){const a=m[1].trim();if(/^'.*'$/.test(a)){A.msgs++;return}const it={k:"out",e:a};A.seq.push(it);A.outs.push(it)}
+  }));
+  A.seq.forEach(it=>{if(it.k==="out")it.used=(it.e.match(/[A-Za-z_]\w*/g)||[]).filter(x=>A.vars.has(x))});
+  return A}
+const desc=it=>it.k==="in"?"دریافت «"+it.v+"»":it.k==="calc"?"محاسبه یا مقداردهی «"+it.v+"»":"نمایش «"+it.e+"»";
+const hint=it=>it.k==="in"?"کلمه‌ای مثل «دریافت» بنویس و اسم متغیر ("+it.v+") یا کلمه‌ی پرسش را بیاور.":it.k==="calc"?"اسم «"+it.v+"» و کلمه‌ای مثل «محاسبه» یا «برابر» را بنویس.":"کلمه‌ای مثل «چاپ» بنویس"+(it.used.length?" و اسم متغیر ("+it.used.join("، ")+") را بیاور.":".");
+const W_IN=/دریافت|بگیر|ورود|بخوان|وارد/,W_OUT=/چاپ|نمایش|نشان|خروج|disp/,W_CALC=/محاسبه|حساب|برابر|قرار|=|مقدار|بریز|ذخیره|ضرب|جمع|تقسیم|تفریق/;
+const kindOf=st=>W_OUT.test(st)?"out":W_IN.test(st)?"in":W_CALC.test(st)?"calc":null;
+const KN={in:"دریافت ورودی",calc:"محاسبه",out:"نمایش خروجی"};
+function checkAlg(text,A){
+  const lines=fa(text).split(/\r?\n/).map(x=>x.trim()).filter(Boolean),S=[],bad=[];
+  if(!lines.length)return{res:[{s:"bad",t:"هنوز چیزی ننوشته‌ای."}],ok:false};
+  lines.forEach((l,i)=>{
+    const m=/^(\d+)\s*[.\-)\]:،]\s*(.*)$/.exec(l);
+    if(!m){bad.push({s:"bad",t:"خط «"+l.slice(0,25)+"» شماره ندارد. هر مرحله باید مثل «"+(i+1)+". ...» شروع شود."});return}
+    if(+m[1]!==i+1)bad.push({s:"bad",t:"شماره‌گذاری به هم خورده: انتظار "+(i+1)+" بود ولی "+m[1]+" نوشته‌ای."});
+    S.push(m[2])});
+  if(bad.length)return{res:bad.concat([{s:"warn",t:"اول شماره‌گذاری را درست کن و دوباره بررسی کن."}]),ok:false};
+  const res=[];let ok=true;
+  const add=(s,t)=>{res.push({s,t});if(s==="bad")ok=false};
+  add("ok","شماره‌گذاری درست است ("+S.length+" مرحله).");
+  let lo=0,hi=S.length;
+  if(/شروع|start/i.test(S[0])){add("ok","مرحله‌ی اول «شروع» است.");lo=1}else add("warn","معمولاً مرحله‌ی اول «شروع» است.");
+  if(S.length>lo&&/پایان|ختم|end/i.test(S[S.length-1])){add("ok","مرحله‌ی آخر «پایان» است.");hi=S.length-1}else add("warn","معمولاً مرحله‌ی آخر «پایان» است.");
+  const body=S.slice(lo,hi).map((t,i)=>({t,n:lo+i+1,k:kindOf(t)}));
+  body.filter(x=>!x.k).forEach(x=>add("warn","مرحله‌ی "+x.n+" مشخص نیست چه کاری می‌کند (کلمه‌ای مثل «بگیر»، «حساب کن» یا «نمایش بده» بنویس) و بررسی نشد."));
+  const runs=a=>{const r=[];a.forEach(x=>{if(r.length&&r[r.length-1].k===x.k)r[r.length-1].n++;else r.push({k:x.k,n:1})});return r};
+  const exp=runs(A.seq),got=runs(body.filter(x=>x.k));
+  for(let i=0;i<Math.max(exp.length,got.length);i++){
+    const e=exp[i],g=got[i];
+    if(!g){add("bad","کم داری: باید "+e.n+" مرحله‌ی «"+KN[e.k]+"» هم بیاید.");break}
+    if(!e){add("bad","مرحله‌ی اضافه: بعد از آخرین کار برنامه، "+g.n+" مرحله‌ی «"+KN[g.k]+"» نوشته‌ای که در کد نیست.");break}
+    if(g.k!==e.k){add("bad","ترتیب درست نیست: در این قسمت از کد باید "+e.n+" مرحله‌ی «"+KN[e.k]+"» بیاید ولی «"+KN[g.k]+"» نوشته‌ای.");break}
+    const fine=e.k==="in"?(g.n>=1&&g.n<=e.n):g.n===e.n;
+    fine?add("ok",g.n+" مرحله‌ی «"+KN[e.k]+"» ✓"):add("bad","در کد "+e.n+" مورد «"+KN[e.k]+"» هست و "+(e.k==="in"?"باید حداکثر":"باید دقیقاً")+" "+e.n+" مرحله شود، ولی "+g.n+" مرحله نوشته‌ای. هر کار را در یک مرحله‌ی جدا بنویس.")}
+  return{res,ok}}
+function runRow(A,src,ans){
+  const sv=vars,so=outFn,sn=needIn,si=inputAnswers,sp=inputPos;
+  vars={};outFn=()=>{};inputAnswers=ans;inputPos=0;needIn=null;steps=0;
+  const r={err:null,outs:[]};
+  try{const st=[];src.split(/\r?\n/).forEach(l=>st.push(...splitStmts(l)));exec(build(st));r.outs=A.outs.map(o=>ev(parseExpr(o.e)))}
+  catch(e){r.err=e.needInput?"کد بیشتر از ورودی‌های جدول input می‌خواهد.":e.message}
+  vars=sv;outFn=so;needIn=sn;inputAnswers=si;inputPos=sp;return r}
+const showV=v=>isS(v)?v.s:v.d.length===1?fmtNum(v.d[0]):v.d.join(" ");
+function checkTable(A,src){
+  if(!A.outs.length)return{res:[{s:"bad",t:"در کد هیچ disp برای متغیر یا عبارتی نیست."}],ok:false};
+  const res=[];let ok=true,filled=0;
+  WK.rows.forEach((r,ri)=>{
+    const n=ri+1;
+    if(r.i.some(v=>!v.trim())||r.o.some(v=>!v.trim())){res.push({s:"warn",t:"ردیف "+n+": خانه‌ی خالی دارد و بررسی نشد."});return}
+    filled++;
+    const run=runRow(A,src,r.i.map(fa));
+    if(run.err){res.push({s:"bad",t:"ردیف "+n+": "+run.err});ok=false;return}
+    const wrong=[];
+    run.outs.forEach((v,k)=>{
+      const mine=fa(r.o[k]).trim();let good;
+      if(isS(v))good=mine===v.s;
+      else{const x=parseFloat(mine);good=!isNaN(x)&&v.d.length===1&&Math.abs(x-v.d[0])<=1e-4*Math.max(1,Math.abs(v.d[0]))}
+      if(!good)wrong.push("«"+A.outs[k].e+"»: تو "+r.o[k]+" نوشته‌ای ولی برنامه "+showV(v)+" می‌دهد")});
+    if(wrong.length){ok=false;res.push({s:"bad",t:"ردیف "+n+": "+wrong.join("؛ ")})}
+    else res.push({s:"ok",t:"ردیف "+n+" درست است."})});
+  if(filled<2){ok=false;res.push({s:"warn",t:"حداقل دو ردیف کامل با ورودی‌های متفاوت لازم است."})}
+  return{res,ok}}
+const SH={oval:"شروع / پایان",io:"ورودی / خروجی",proc:"پردازش",dec:"شرط"};
+function checkFlow(A){
+  const B=WK.flow.map(b=>({t:b.t,text:fa(b.text)})),res=[];let ok=true;
+  const add=(s,t)=>{res.push({s,t});if(s==="bad")ok=false};
+  if(!B.length)return{res:[{s:"bad",t:"هنوز شکلی نگذاشته‌ای."}],ok:false};
+  const f=B[0],l=B[B.length-1];
+  f.t==="oval"&&/شروع|start/i.test(f.text)?add("ok","شروع درست است."):add("bad","اولین بلوک باید بیضی با نوشته‌ی «شروع» باشد.");
+  B.length>1&&l.t==="oval"&&/پایان|ختم|end/i.test(l.text)?add("ok","پایان درست است."):add("bad","آخرین بلوک باید بیضی با نوشته‌ی «پایان» باشد.");
+  const mid=B.length>1?B.slice(1,-1):[],want=A.seq.length;
+  if(mid.length!==want)add("bad","بین شروع و پایان باید "+want+" بلوک باشد (هر ورودی، هر محاسبه و هر خروجی یک بلوک جدا) ولی "+mid.length+" بلوک داری.");
+  A.seq.slice(0,mid.length).forEach((it,i)=>{
+    const b=mid[i],n=i+2,need=it.k==="calc"?"proc":"io";
+    if(b.t!==need){add("bad","بلوک "+n+" باید "+(need==="io"?"متوازی‌الاضلاع (ورودی/خروجی)":"مستطیل (پردازش)")+" باشد، چون مربوط به "+desc(it)+" است.");return}
+    const good=it.k==="in"?(hasTok(b.text,it.v)||it.kw.some(k=>b.text.includes(k))):it.k==="calc"?hasTok(b.text,it.v):(it.used.length?it.used.some(u=>hasTok(b.text,u)):b.text.trim().length>0);
+    good?add("ok","بلوک "+n+": "+desc(it)):add("bad","بلوک "+n+": شکل درست است ولی داخلش باید به "+desc(it)+" اشاره کند (اسم متغیر را بنویس).")});
+  return{res,ok}}
+const NUMW={"یک":1,"دو":2,"سه":3,"چهار":4,"پنج":5,"شش":6,"هفت":7,"هشت":8,"نه":9,"ده":10};
+function countIn(t){t=fa(t);const m=t.match(/\d+/);if(m)return +m[0];for(const w of t.split(/[\s،,.]+/))if(NUMW[w])return NUMW[w];return null}
+function checkIO(A,io){
+  const res=[];let ok=true;const add=(s,t)=>{res.push({s,t});if(s==="bad")ok=false};
+  const ti=io.i.trim(),to=io.o.trim(),n=A.ins.length,m=A.outs.length;
+  if(!ti)add("bad","قسمت ورودی خالی است.");
+  else{const c=countIn(ti);
+    if(!n)add("ok","کد input ندارد و تو ورودی را نوشته‌ای.");
+    else if(c!==null&&c!==n)add("bad","کد "+n+" ورودی از کاربر می‌گیرد ولی تو "+c+" نوشته‌ای.");
+    else if(c===null&&n>1)add("bad","تعداد ورودی‌ها را بنویس (کد "+n+" ورودی می‌گیرد، مثلاً «... عدد از کاربر بگیر»).");
+    else add("ok","ورودی‌ها درست توصیف شده‌اند.")}
+  if(!to)add("bad","قسمت خروجی خالی است.");
+  else{const c=countIn(to);
+    if(A.msgs&&!/پیغام|پیام|متن|توضیح/.test(fa(to)))add("bad","کد یک پیغام (disp با متن) هم چاپ می‌کند؛ در خروجی به «پیغام» اشاره کن.");
+    else if(c!==null&&m>1&&c!==m)add("bad","کد "+m+" مقدار چاپ می‌کند ولی تو "+c+" نوشته‌ای.");
+    else add("ok","خروجی‌ها درست توصیف شده‌اند.")}
+  return{res,ok}}
+/*ENDPAGES*/
+/* ---- pages UI ---- */
+function showRes(id,r,okMsg,badMsg){
+  const ic={ok:"✓",bad:"✗",warn:"!"};
+  $(id).innerHTML='<div class="verdict '+(r.ok?"v-ok":"v-bad")+'">'+(r.ok?okMsg:badMsg)+'</div><ul>'+r.res.map(x=>'<li class="'+x.s+'"><b>'+ic[x.s]+'</b>'+att(x.t)+'</li>').join("")+'</ul>'}
+const NOCODE={res:[{s:"bad",t:"در کد هنوز input یا disp یا محاسبه‌ای نیست. اول در صفحه‌ی Code کد را بنویس."}],ok:false};
+function drawTable(A){
+  const ni=A.ins.length,no=A.outs.length;
+  if(!WK.rows.length)WK.rows=[{i:[],o:[]},{i:[],o:[]}];
+  WK.rows.forEach(r=>{r.i=Array.from({length:ni},(_,k)=>r.i[k]||"");r.o=Array.from({length:no},(_,k)=>r.o[k]||"")});
+  if(!ni&&!no){$("tb").innerHTML="";return}
+  let h="<tr>"+A.ins.map(x=>"<th>"+att(x.v)+"<small>ورودی</small></th>").join("")+A.outs.map(x=>"<th>"+att(x.e)+"<small>خروجی</small></th>").join("")+"<th></th></tr>";
+  WK.rows.forEach((r,ri)=>{
+    h+="<tr>"+r.i.map((v,k)=>'<td><input data-r="'+ri+'" data-g="i" data-k="'+k+'" value="'+att(v)+'" aria-label="ورودی"></td>').join("")
+      +r.o.map((v,k)=>'<td><input data-r="'+ri+'" data-g="o" data-k="'+k+'" value="'+att(v)+'" aria-label="خروجی"></td>').join("")
+      +'<td><button class="x" data-del="'+ri+'" aria-label="حذف ردیف">✕</button></td></tr>'});
+  $("tb").innerHTML=h}
+const svgOf=t=>'<svg viewBox="0 0 100 '+(t==="dec"?50:40)+'" preserveAspectRatio="none" aria-hidden="true">'+({oval:'<rect x="1" y="1" width="98" height="38" rx="19"/>',io:'<polygon points="12,1 99,1 88,39 1,39"/>',proc:'<rect x="1" y="1" width="98" height="38"/>',dec:'<polygon points="50,1 99,25 50,49 1,25"/>'})[t]+'</svg>';
+function drawFlow(){
+  $("fc").innerHTML=WK.flow.length?WK.flow.map((b,i)=>
+    '<div class="row"><div class="blk b-'+b.t+'">'+svgOf(b.t)+'<input data-i="'+i+'" value="'+att(b.text)+'" aria-label="'+SH[b.t]+'" placeholder="'+SH[b.t]+'"></div>'
+    +'<div class="ctl"><button data-m="'+i+'" data-d="-1" aria-label="بالا">↑</button><button data-m="'+i+'" data-d="1" aria-label="پایین">↓</button><button data-x="'+i+'" aria-label="حذف">✕</button></div></div>'
+    +(i<WK.flow.length-1?'<div class="arr" aria-hidden="true">▼</div>':"")).join("")
+    :'<p class="empty">هنوز شکلی نیست. از بالا یک شکل انتخاب کن.</p>'}
+function setView(n){
+  ["main",".strip",".path"].forEach(q=>document.querySelector(q).hidden=n!=="code");
+  ["alg","tab","flow"].forEach(k=>$("v-"+k).hidden=n!==k);
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.view===n));
+  if(n==="code"){paint();return}
+  ["alg-code","tab-code","flow-code"].forEach(id=>$(id).textContent=ta.value);
+  if(n==="alg")$("alg-in").value=WK.alg;
+  if(n==="tab"){$("io-i").value=WK.io.i;$("io-o").value=WK.io.o;drawTable(analyze(ta.value))}
+  if(n==="flow")drawFlow()}
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>setView(b.dataset.view));
+$("alg-in").addEventListener("input",e=>{WK.alg=e.target.value;saveW()});
+$("alg-go").onclick=()=>{const A=analyze(ta.value);showRes("alg-res",A.seq.length?checkAlg(WK.alg,A):NOCODE,"✅ الگوریتم درست است. برو سراغ جدول.","❌ الگوریتم اشکال دارد.")};
+$("io-i").addEventListener("input",e=>{WK.io.i=e.target.value;saveW()});
+$("io-o").addEventListener("input",e=>{WK.io.o=e.target.value;saveW()});
+$("io-go").onclick=()=>{const A=analyze(ta.value);showRes("io-res",A.seq.length?checkIO(A,WK.io):NOCODE,"✅ جدول درست است. برو سراغ فلوچارت.","❌ جدول اشکال دارد.")};
+$("tb").addEventListener("input",e=>{const d=e.target.dataset;if(d.r!==undefined){WK.rows[+d.r][d.g][+d.k]=e.target.value;saveW()}});
+$("tb").addEventListener("click",e=>{const x=e.target.closest("[data-del]");if(x){WK.rows.splice(+x.dataset.del,1);saveW();drawTable(analyze(ta.value))}});
+$("tb-add").onclick=()=>{WK.rows.push({i:[],o:[]});saveW();drawTable(analyze(ta.value))};
+$("tb-go").onclick=()=>{const A=analyze(ta.value);showRes("tb-res",A.seq.length?checkTable(A,ta.value):NOCODE,"✅ همه‌ی ردیف‌ها درست است.","❌ ردیف‌ها اشکال دارند.")};
+$("pal").onclick=e=>{const t=e.target.closest("[data-t]");if(!t)return;WK.flow.push({t:t.dataset.t,text:""});saveW();drawFlow();const ins=$("fc").querySelectorAll("input");ins[ins.length-1].focus()};
+$("fc").addEventListener("input",e=>{const i=e.target.dataset.i;if(i!==undefined){WK.flow[+i].text=e.target.value;saveW()}});
+$("fc").addEventListener("click",e=>{
+  const m=e.target.closest("[data-m]"),x=e.target.closest("[data-x]");
+  if(m){const i=+m.dataset.m,j=i+ +m.dataset.d;if(j>=0&&j<WK.flow.length){[WK.flow[i],WK.flow[j]]=[WK.flow[j],WK.flow[i]];saveW();drawFlow()}}
+  if(x){WK.flow.splice(+x.dataset.x,1);saveW();drawFlow()}});
+$("fc-go").onclick=()=>{const A=analyze(ta.value);showRes("fc-res",A.seq.length?checkFlow(A):NOCODE,"✅ فلوچارت درست است.","❌ فلوچارت اشکال دارد.")};
 paint();updateWs();
 print("کد را در ویرایشگر بنویسید و Run (یا F5) را بزنید. برای راهنما بنویسید: help");
 </script>
