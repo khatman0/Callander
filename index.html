@@ -1,117 +1,608 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>برنامه‌ی کلاسی من | ورود</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MATLAB – تمرین</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Vazirmatn:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f0f0; --panel:#ffffff; --bar:#e6e6e6; --line:#c9c9c9; --text:#222; --muted:#666;
+  --blue:#0072bd; --orange:#d95319; --yellow:#edb120; --green:#028009; --purple:#aa04f9; --kw:#0000ff; --err:#d6141e;
+  --sel:#cfe4f5; --tab:#fff; color-scheme:light;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#2b2b2b; --panel:#1e1e1e; --bar:#383838; --line:#4a4a4a; --text:#e4e4e4; --muted:#999;
+    --blue:#4aa3df; --orange:#f07a47; --green:#5cb85c; --purple:#c678dd; --kw:#6fa8ff; --err:#ff6b6b; --sel:#264f78; --tab:#1e1e1e; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#2b2b2b; --panel:#1e1e1e; --bar:#383838; --line:#4a4a4a; --text:#e4e4e4; --muted:#999;
+  --blue:#4aa3df; --orange:#f07a47; --green:#5cb85c; --purple:#c678dd; --kw:#6fa8ff; --err:#ff6b6b; --sel:#264f78; --tab:#1e1e1e; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.6 'Vazirmatn',system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+.mono{font-family:'JetBrains Mono','Vazirmatn',Consolas,Menlo,monospace;font-size:13px}
+header{background:var(--bar);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:4px 12px;direction:ltr}
+.logo{width:22px;height:22px}
+header b{font-weight:600}
+.tabs{display:flex;gap:2px;margin-inline-start:12px}
+.tabs span{padding:2px 12px;color:var(--muted)}
+.tabs .on{color:var(--text);border-bottom:3px solid var(--orange)}
+header button{margin-inline-start:auto;background:var(--panel);color:var(--text);border:1px solid var(--line);padding:2px 10px;cursor:pointer;font:inherit}
+.strip{background:var(--panel);border-bottom:1px solid var(--line);padding:6px 12px;display:flex;gap:8px;flex-wrap:wrap;direction:ltr}
+.strip button{background:var(--bar);color:var(--text);border:1px solid var(--line);padding:4px 12px;cursor:pointer;font:inherit;border-radius:2px}
+.strip button:hover{background:var(--sel)}
+.strip button:focus-visible,header button:focus-visible,.files li:focus-visible,#cmd:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.path{background:var(--bar);padding:2px 12px;border-bottom:1px solid var(--line);color:var(--muted);direction:ltr}
+main{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:4px;padding:4px;min-height:0;direction:ltr}
+.pane{background:var(--panel);border:1px solid var(--line);display:flex;flex-direction:column;min-height:0;min-width:0}
+.pane>h2{margin:0;font-size:12px;font-weight:600;background:var(--bar);padding:3px 8px;border-bottom:1px solid var(--line)}
+.files{list-style:none;margin:0;padding:4px 0;overflow:auto}
+.files li{padding:3px 12px;cursor:pointer;white-space:nowrap}
+.files li:hover{background:var(--bar)}
+.files li.on{background:var(--sel)}
+.files li::before{content:"▣ ";color:var(--blue)}
+.center{display:grid;grid-template-rows:minmax(0,3fr) minmax(0,2fr);gap:4px;min-height:0}
+.edtab{background:var(--bar);display:flex}
+.edtab input{background:var(--tab);color:var(--text);font:inherit;padding:3px 14px;border:0;border-top:3px solid var(--orange);border-right:1px solid var(--line);width:200px;outline-offset:-2px}
+.edtab span{background:var(--tab);padding:3px 14px;border-top:3px solid var(--orange);border-right:1px solid var(--line)}
+.editor{flex:1;overflow:hidden;display:flex;min-height:120px}
+.gut{padding:8px 8px;text-align:right;color:var(--muted);background:var(--bar);user-select:none;white-space:pre;line-height:1.7;overflow:hidden;direction:ltr}
+.ed{position:relative;flex:1;min-width:0}
+.ed pre,.ed textarea{position:absolute;inset:0;margin:0;padding:8px 12px;border:0;font:inherit;line-height:1.7;white-space:pre;tab-size:4;direction:ltr;text-align:left}
+.ed pre{overflow:hidden;pointer-events:none;color:var(--text)}
+.ed textarea{overflow:auto;background:transparent;color:transparent;caret-color:var(--text);resize:none;outline:none}
+.ed textarea::selection{background:var(--sel)}
+.c{color:var(--green)} .s{color:var(--purple)} .k{color:var(--kw)} .n{color:var(--orange)}
+.cw{flex:1;overflow:auto;padding:8px 12px;line-height:1.6}
+.cw .o{white-space:pre-wrap;unicode-bidi:plaintext;display:block;min-height:1.6em}
+.cw .e{color:var(--err)}
+.cw .m{color:var(--muted)}
+.prompt{display:flex;gap:8px;align-items:center}
+.prompt i{font-style:normal;color:var(--muted);white-space:nowrap;max-width:60%;overflow:hidden;text-overflow:ellipsis;unicode-bidi:plaintext}
+#cmd{flex:1;border:0;background:transparent;color:var(--text);font:inherit;outline-offset:2px}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:2px 8px;border-bottom:1px solid var(--line);font-weight:400;unicode-bidi:plaintext}
+th{background:var(--bar);font-weight:600;font-size:12px}
+.right{display:flex;flex-direction:column;min-height:0}
+.right .pane{flex:1;overflow:auto}
+.fig{padding:8px;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;flex:1}
+canvas{width:100%;max-width:100%;border:1px solid var(--line);background:var(--panel)}
+footer{background:var(--blue);color:#fff;padding:2px 12px;font-size:12px;display:flex;justify-content:space-between;direction:ltr}
+@media (max-width:860px){
+  body{overflow:auto}
+  main{grid-template-columns:1fr;display:flex;flex-direction:column}
+  .center{display:flex;flex-direction:column}
+  .editor{height:300px;flex:none} .cw{min-height:240px}
+  .files{max-height:140px}
+}
+</style>
 </head>
 <body>
-  <main class="wrap">
-    <h1>برنامه‌ی کلاسی من</h1>
-    <p class="sub">وارد شو تا ساعت و مکان کلاس‌هات رو یک‌جا ببینی.</p>
-
-    <div class="card">
-      <h2 id="formTitle">ورود</h2>
-      <div id="authForm">
-        <label for="username">نام کاربری</label>
-        <input id="username" type="text" dir="auto" autocomplete="username" maxlength="20" autocapitalize="none" spellcheck="false">
-        <p class="hint" id="userHint" hidden>۳ تا ۲۰ کاراکتر؛ فقط حروف فارسی، حروف انگلیسی و عدد. بدون فاصله و علامت.</p>
-
-        <label for="password">رمز عبور</label>
-        <input id="password" type="password" dir="auto" autocomplete="current-password" maxlength="30">
-        <p class="hint" id="passHint" hidden>۶ تا ۳۰ کاراکتر، بدون فاصله. حروف بزرگ و کوچک انگلیسی با هم فرق دارن.</p>
-
-        <button id="submitBtn" class="btn" type="button">ورود</button>
-        <p id="msg" class="msg" role="alert"></p>
+<header>
+  <svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 17 8 8l4 4 3-9 8 14-7-3-4 6z" fill="#d95319"/><path d="M8 8l4 4 3-9-3 6z" fill="#edb120"/><path d="M12 12l-4 8 1 0 3-6z" fill="#0072bd"/></svg>
+  <b>MATLAB R2026b – سایت من</b>
+  <nav class="tabs" aria-hidden="true"><span class="on">HOME</span><span>PLOTS</span><span>APPS</span></nav>
+  <button id="theme" aria-label="تغییر تم">Theme</button>
+</header>
+<div class="strip" role="toolbar" aria-label="Run">
+  <button id="run" title="F5 / Ctrl+Enter">▶ Run</button>
+  <button id="bopen" title="Open a .m or .txt file">Open</button>
+  <button id="bsave" title="Ctrl+S">Save</button>
+  <button id="bdl" title="Download a copy">Download</button>
+  <input type="file" id="fin" accept=".m,.txt,text/plain" hidden>
+  <button data-cmd="clc">Clear Window</button>
+  <button data-cmd="clear">Clear Workspace</button>
+</div>
+<div class="path mono">📁 C:\Users\me\site ▸</div>
+<main>
+  <div class="center">
+    <section class="pane" aria-label="Editor">
+      <div class="edtab mono"><span id="fname">script.m</span></div>
+      <div class="editor mono"><div class="gut" id="gut"></div><div class="ed"><pre id="hlp" aria-hidden="true"></pre><textarea id="ta" wrap="off" spellcheck="false" aria-label="Editor"></textarea></div></div>
+    </section>
+    <section class="pane" aria-label="Command Window">
+      <h2>Command Window</h2>
+      <div class="cw mono" id="cw" onclick="cmd.focus()">
+        <div id="out"></div>
+        <div class="prompt"><i>&gt;&gt;</i><input id="cmd" class="mono" autocomplete="off" spellcheck="false" aria-label="Command" placeholder="help"></div>
       </div>
-      <p class="switch">
-        <span id="switchText">حساب نداری؟</span>
-        <button id="switchBtn" class="linkbtn" type="button">ثبت‌نام</button>
-      </p>
+    </section>
+  </div>
+  <div class="right">
+    <section class="pane" aria-label="Workspace">
+      <h2>Workspace</h2>
+      <table class="mono"><thead><tr><th>Name</th><th>Value</th></tr></thead><tbody id="ws"></tbody></table>
+    </section>
     </div>
-  </main>
+</main>
+<footer><span id="st">Ready</span><span>UTF-8 &nbsp; script &nbsp; Ln 1 Col 1</span></footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js"></script>
-  <script>
-    let mode = 'login'; // 'login' | 'signup'
-
-    const $ = id => document.getElementById(id);
-    const msg = (text, type = 'err') => { $('msg').textContent = text; $('msg').className = 'msg ' + type; };
-
-    // بعد از ورود: اگه کلاس ثبت کرده بود → برنامه، وگرنه → ثبت درس‌ها
-    async function afterLogin() {
-      try {
-        location.replace((await hasClasses()) ? 'schedule.html' : 'add-classes.html');
-      } catch (e) {
-        msg('خطا در اتصال به سرور. دوباره تلاش کن.');
-      }
+<script>
+/*INTERP*/
+const M=(r,c,d)=>({r,c,d}),S=s=>({s}),sc=v=>M(1,1,[v]),isS=v=>v&&v.s!==undefined;
+let vars={},outFn=()=>{},endCtx=null,steps=0,figFn=()=>{},titleFn=()=>{},cwClear=()=>{};
+let inputAnswers=[],inputPos=0,needIn=null;
+const err=m=>{throw new Error(m)};
+const truthy=v=>isS(v)?v.s.length>0:v.d.length>0&&v.d.every(x=>x!==0);
+function lex(src){
+  const t=[];let i=0;
+  while(i<src.length){
+    const ch=src[i],sp=i>0&&/\s/.test(src[i-1]);
+    if(/\s/.test(ch)){i++;continue}
+    if(ch==="%")break;
+    const rest=src.slice(i);let m;
+    if((m=/^(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?/.exec(rest))){t.push({k:"n",v:parseFloat(m[0]),sp});i+=m[0].length;continue}
+    if((m=/^[A-Za-z_]\w*/.exec(rest))){t.push({k:"id",v:m[0],sp});i+=m[0].length;continue}
+    if(ch==="'"){
+      const p=t[t.length-1];
+      if(p&&!sp&&(p.k==="n"||p.k==="id"||p.v===")"||p.v==="]"||p.v==="'")){t.push({k:"op",v:"'",sp});i++;continue}
+      let j=i+1,s="";
+      while(j<src.length){if(src[j]==="'"){if(src[j+1]==="'"){s+="'";j+=2;continue}break}s+=src[j++]}
+      if(j>=src.length)err("A MATLAB string constant is not terminated properly.");
+      t.push({k:"s",v:s,sp});i=j+1;continue;
     }
+    const two=src.substr(i,2);
+    if(["==","~=","!=","<=",">=","&&","||",".*","./",".^"].includes(two)){t.push({k:"op",v:two==="~="?"!=":two,sp});i+=2;continue}
+    if("+-*/^<>&|~!()[],;:".includes(ch)){t.push({k:"op",v:ch==="~"?"!":ch,sp});i++;continue}
+    err("Invalid character '"+ch+"'.");
+  }
+  return t;
+}
+const cache=new Map();
+function parseExpr(src){
+  if(cache.has(src))return cache.get(src);
+  const tk=lex(src);let p=0,mat=false;
+  const isOp=v=>tk[p]&&tk[p].k==="op"&&tk[p].v===v;
+  const need=v=>{if(!isOp(v))err("Parse error: expected '"+v+"'.");p++};
+  const L=(ops,sub)=>()=>{let l=sub();
+    while(tk[p]&&tk[p].k==="op"&&ops.includes(tk[p].v)){
+      const o=tk[p];
+      if(mat&&(o.v==="+"||o.v==="-")&&o.sp&&tk[p+1]&&!tk[p+1].sp)break;
+      p++;l={t:"b",o:o.v,l,r:sub()}}
+    return l};
+  function args(){const a=[],prev=mat;mat=false;
+    if(!isOp(")")){for(;;){
+      if(isOp(":")&&tk[p+1]&&(tk[p+1].v===","||tk[p+1].v===")")){p++;a.push({t:"all"})}else a.push(expr());
+      if(isOp(",")){p++;continue}break}}
+    mat=prev;return a}
+  function matrix(){const prev=mat;mat=true;const rows=[[]];
+    while(!isOp("]")){
+      if(!tk[p])err("Matrix is not closed.");
+      if(isOp(";")){p++;rows.push([]);continue}
+      if(isOp(",")){p++;continue}
+      rows[rows.length-1].push(expr())}
+    p++;mat=prev;return{t:"mat",rows:rows.filter(r=>r.length)}}
+  function primary(){
+    const k=tk[p++];if(!k)err("Incomplete expression.");
+    if(k.k==="n")return{t:"num",v:k.v};
+    if(k.k==="s")return{t:"str",v:k.v};
+    if(k.k==="op"&&k.v==="("){const prev=mat;mat=false;const e=expr();mat=prev;need(")");return{t:"par",x:e}}
+    if(k.k==="op"&&k.v==="[")return matrix();
+    if(k.k==="id"){if(isOp("(")){p++;const a=args();need(")");return{t:"call",n:k.v,a}}return{t:"id",n:k.v}}
+    err("Parse error near '"+k.v+"'.");
+  }
+  function postfix(){let x=primary();while(isOp("'")){p++;x={t:"tr",x}}return x}
+  function power(){let b=postfix();
+    while(isOp("^")||isOp(".^")){const o=tk[p++].v;let e;
+      if(isOp("-")||isOp("+")||isOp("!")){const u=tk[p++].v;e={t:"u",o:u,x:postfix()}}else e=postfix();
+      b={t:"b",o,l:b,r:e}}
+    return b}
+  function unary(){if(isOp("-")||isOp("+")||isOp("!")){const o=tk[p++].v;return{t:"u",o,x:unary()}}return power()}
+  const mul=L(["*","/",".*","./"],unary),add=L(["+","-"],mul);
+  const range=()=>{const a=add();
+    if(isOp(":")){p++;const b=add();if(isOp(":")){p++;return{t:"r",a,s:b,b:add()}}return{t:"r",a,s:null,b}}
+    return a};
+  const cmp=L(["==","!=","<",">","<=",">="],range),and=L(["&"],cmp),or=L(["|"],and),land=L(["&&"],or),lor=L(["||"],land);
+  function expr(){return lor()}
+  const e=expr();
+  if(p<tk.length)err("Parse error near '"+tk[p].v+"'.");
+  cache.set(src,e);return e;
+}
+const OP={"+":(x,y)=>x+y,"-":(x,y)=>x-y,"*":(x,y)=>x*y,"/":(x,y)=>x/y,"^":(x,y)=>Math.pow(x,y),
+"==":(x,y)=>+(x===y),"!=":(x,y)=>+(x!==y),"<":(x,y)=>+(x<y),">":(x,y)=>+(x>y),"<=":(x,y)=>+(x<=y),">=":(x,y)=>+(x>=y),
+"&":(x,y)=>+(!!x&&!!y),"|":(x,y)=>+(!!x||!!y)};
+function ew(a,b,f){
+  const r=a.r===b.r?a.r:a.r===1?b.r:b.r===1?a.r:-1,c=a.c===b.c?a.c:a.c===1?b.c:b.c===1?a.c:-1;
+  if(r<0||c<0)err("Arrays have incompatible sizes for this operation.");
+  const d=[];
+  for(let i=0;i<r;i++)for(let j=0;j<c;j++)d.push(f(a.d[(a.r===1?0:i)*a.c+(a.c===1?0:j)],b.d[(b.r===1?0:i)*b.c+(b.c===1?0:j)]));
+  return M(r,c,d)}
+function matmul(a,b){
+  if(a.c!==b.r)err("Incorrect dimensions for matrix multiplication. Check that the number of columns in the first matrix matches the number of rows in the second matrix.");
+  const d=[];
+  for(let i=0;i<a.r;i++)for(let j=0;j<b.c;j++){let s=0;for(let k=0;k<a.c;k++)s+=a.d[i*a.c+k]*b.d[k*b.c+j];d.push(s)}
+  return M(a.r,b.c,d)}
+function binop(op,a,b){
+  if(isS(a)||isS(b)){
+    if(op==="=="&&isS(a)&&isS(b))return sc(a.s===b.s?1:0);
+    err("Operator '"+op+"' is not supported for operands of type 'char'.")}
+  if(op==="*"&&a.d.length>1&&b.d.length>1)return matmul(a,b);
+  if(op==="/"&&b.d.length>1)err("Matrix right division is not supported. Use ./ for element-wise division.");
+  if(op==="^"&&(a.d.length>1||b.d.length>1))err("Matrix power is not supported. Use .^ for element-wise power.");
+  return ew(a,b,OP[({".*":"*","./":"/",".^":"^"})[op]||op])}
+function hcat(list){
+  list=list.filter(m=>m.d.length);if(!list.length)return M(0,0,[]);
+  const r=list[0].r;
+  if(list.some(m=>m.r!==r))err("Dimensions of arrays being concatenated are not consistent.");
+  const c=list.reduce((s,m)=>s+m.c,0),d=[];
+  for(let i=0;i<r;i++)list.forEach(m=>{for(let j=0;j<m.c;j++)d.push(m.d[i*m.c+j])});
+  return M(r,c,d)}
+function vcat(list){
+  list=list.filter(m=>m.d.length);if(!list.length)return M(0,0,[]);
+  const c=list[0].c;
+  if(list.some(m=>m.c!==c))err("Dimensions of arrays being concatenated are not consistent.");
+  return M(list.reduce((s,m)=>s+m.r,0),c,[].concat(...list.map(m=>m.d)))}
+function idxList(node,len){
+  if(node.t==="all")return Array.from({length:len},(_,i)=>i);
+  const sv=endCtx;endCtx=len;const v=ev(node);endCtx=sv;
+  if(isS(v))err("Invalid index.");
+  return v.d.map(x=>{if(!Number.isInteger(x)||x<1)err(x===0?"Index in position 1 is invalid. Array indices must be positive integers or logical values.":"Array indices must be positive integers or logical values.");return x-1})}
+function index(v,a){
+  if(isS(v)){const ids=idxList(a[0],v.s.length);return S(ids.map(i=>v.s[i]||"").join(""))}
+  if(a.length===1){
+    const ids=idxList(a[0],v.d.length);
+    ids.forEach(i=>{if(i>=v.d.length)err("Index exceeds the number of array elements. Index must not exceed "+v.d.length+".")});
+    const d=ids.map(i=>v.d[i]);
+    return v.c===1&&v.r>1?M(d.length,1,d):(v.r>1&&a[0].t==="all")?M(d.length,1,d):M(1,d.length,d)}
+  const rs=idxList(a[0],v.r),cs=idxList(a[1],v.c);
+  rs.forEach(i=>{if(i>=v.r)err("Index in position 1 exceeds array bounds. Index must not exceed "+v.r+".")});
+  cs.forEach(j=>{if(j>=v.c)err("Index in position 2 exceeds array bounds. Index must not exceed "+v.c+".")});
+  const d=[];rs.forEach(i=>cs.forEach(j=>d.push(v.d[i*v.c+j])));
+  return M(rs.length,cs.length,d)}
+function assignIdx(name,a,val){
+  let v=vars[name]||M(0,0,[]);
+  if(isS(v)||isS(val))err("Assignment to character arrays is not supported.");
+  if(a.length===1){
+    const ids=idxList(a[0],v.d.length);let r=v.r,c=v.c;const d=v.d.slice(),need=Math.max(-1,...ids)+1;
+    if(need>d.length){
+      if(r<=1){r=1;c=need}else if(c===1){r=need}else err("Linear indexing cannot grow a matrix.");
+      while(d.length<need)d.push(0)}
+    if(val.d.length!==1&&val.d.length!==ids.length)err("Unable to perform assignment because the number of elements on the left and right sides is not the same.");
+    ids.forEach((i,k)=>d[i]=val.d.length===1?val.d[0]:val.d[k]);
+    vars[name]=M(r,c,d);return}
+  const rs=idxList(a[0],v.r),cs=idxList(a[1],v.c);
+  const R=Math.max(v.r,Math.max(-1,...rs)+1),C=Math.max(v.c,Math.max(-1,...cs)+1);
+  const d=Array(R*C).fill(0);
+  for(let i=0;i<v.r;i++)for(let j=0;j<v.c;j++)d[i*C+j]=v.d[i*v.c+j];
+  if(val.d.length!==1&&val.d.length!==rs.length*cs.length)err("Unable to perform assignment because the number of elements on the left and right sides is not the same.");
+  rs.forEach((i,ri)=>cs.forEach((j,ci)=>{const k=ci*rs.length+ri;d[i*C+j]=val.d.length===1?val.d[0]:val.d[(k%val.r)*val.c+Math.floor(k/val.r)]}));
+  vars[name]=M(R,C,d)}
+function ev(n){
+  switch(n.t){
+    case"num":return sc(n.v);
+    case"str":return S(n.v);
+    case"par":return ev(n.x);
+    case"all":return err("Invalid use of ':'.");
+    case"id":
+      if(n.n==="end"){if(endCtx===null)err("Illegal use of end.");return sc(endCtx)}
+      if(n.n in vars)return vars[n.n];
+      return callFn(n.n,[]);
+    case"call":
+      if(n.n in vars)return index(vars[n.n],n.a);
+      return callFn(n.n,n.a.map(x=>{const v=ev(x);if(v==null)err("Invalid argument.");return v}));
+    case"b":
+      if(n.o==="&&")return sc(truthy(ev(n.l))&&truthy(ev(n.r))?1:0);
+      if(n.o==="||")return sc(truthy(ev(n.l))||truthy(ev(n.r))?1:0);
+      return binop(n.o,ev(n.l),ev(n.r));
+    case"u":{const x=ev(n.x);if(isS(x))err("Unary operator is not supported for char.");
+      return M(x.r,x.c,x.d.map(n.o==="-"?v=>-v:n.o==="!"?v=>+(v===0):v=>v))}
+    case"tr":{const x=ev(n.x);if(isS(x))return x;const d=[];
+      for(let j=0;j<x.c;j++)for(let i=0;i<x.r;i++)d.push(x.d[i*x.c+j]);return M(x.c,x.r,d)}
+    case"r":{const a=ev(n.a).d[0],b=ev(n.b).d[0],s=n.s?ev(n.s).d[0]:1;
+      if(s===0)err("Step size cannot be zero.");
+      const d=[],cnt=Math.floor((b-a)/s+1e-10);
+      for(let i=0;i<=cnt;i++)d.push(a+i*s);return M(1,d.length,d)}
+    case"mat":{const rows=n.rows.map(r=>r.map(ev));
+      if(rows.some(r=>r.some(isS)))return S(rows.map(r=>r.map(v=>isS(v)?v.s:String.fromCharCode(...v.d)).join("")).join(""));
+      return vcat(rows.map(hcat))}
+  }
+}
+const fmtG=x=>Number.isInteger(x)?String(x):!isFinite(x)?(isNaN(x)?"NaN":x<0?"-Inf":"Inf"):String(+x.toPrecision(6));
+const fmtNum=x=>Number.isInteger(x)?String(x):!isFinite(x)?(isNaN(x)?"NaN":x<0?"-Inf":"Inf"):x.toFixed(4);
+function fmtMat(m){
+  const ints=m.d.every(x=>Number.isInteger(x)||!isFinite(x));
+  const s=m.d.map(x=>ints?fmtG(x):fmtNum(x)),w=Math.max(...s.map(x=>x.length))+(ints?3:4),W=Math.max(ints?6:10,w),rows=[];
+  for(let i=0;i<m.r;i++)rows.push(s.slice(i*m.c,(i+1)*m.c).map(x=>x.padStart(W)).join(""));
+  return rows.join("\n")}
+function showVar(n,v){
+  if(isS(v))return outFn(n+" = "+v.s);
+  if(v.d.length===0)return outFn(n+" =\n\n     []\n ");
+  if(v.d.length===1)return outFn(n+" = "+fmtNum(v.d[0]));
+  outFn(n+" =\n\n"+fmtMat(v)+"\n ")}
+function sprintf(fmt,args){
+  fmt=fmt.replace(/\\n/g,"\n").replace(/\\t/g,"\t").replace(/\\\\/g,"\\");
+  const flat=[];args.forEach(a=>{if(isS(a))flat.push(a.s);else a.d.forEach(x=>flat.push(x))});
+  let out="",ai=0,used;
+  do{
+    used=0;
+    out+=fmt.replace(/%(%|[-+0 ]*\d*(?:\.\d+)?[dfgsie])/g,(m,spec)=>{
+      if(spec==="%")return"%";
+      const cv=spec.slice(-1),a=flat[ai++];used++;
+      if(a===undefined)return"";
+      const mm=/^([-+0 ]*)(\d*)(?:\.(\d+))?/.exec(spec);let s;
+      if(typeof a==="string")s=a;
+      else if(cv==="s")s=fmtG(a);
+      else if(cv==="f")s=a.toFixed(mm[3]===undefined?6:+mm[3]);
+      else if(cv==="e")s=a.toExponential(mm[3]===undefined?6:+mm[3]);
+      else if(cv==="d"||cv==="i")s=Number.isInteger(a)?String(a):fmtG(a);
+      else s=fmtG(a);
+      const w=+mm[2];
+      if(w)s=mm[1].includes("-")?s.padEnd(w):(mm[1].includes("0")&&typeof a!=="string"?s.padStart(w,"0"):s.padStart(w));
+      return s});
+  }while(ai<flat.length&&used>0);
+  return out}
+const m1=f=>a=>{if(isS(a))err("Argument must be numeric.");return M(a.r,a.c,a.d.map(f))};
+function reduce(a,f){
+  if(a.r===1||a.c===1)return sc(f(a.d));
+  const d=[];for(let j=0;j<a.c;j++){const v=[];for(let i=0;i<a.r;i++)v.push(a.d[i*a.c+j]);d.push(f(v))}
+  return M(1,a.c,d)}
+function fill(r,c,v){let R=1,C=1;
+  if(r){if(r.d.length>1){R=r.d[0];C=r.d[1]}else{R=r.d[0];C=c?c.d[0]:R}}
+  return M(R,C,Array(R*C).fill(v))}
+function gj(a){
+  const n=a.r;if(n!==a.c)err("Matrix must be square.");
+  const A=[],I=[];
+  for(let i=0;i<n;i++){A.push(a.d.slice(i*n,i*n+n));I.push(Array.from({length:n},(_,j)=>+(i===j)))}
+  let det=1;
+  for(let c=0;c<n;c++){
+    let p=c;for(let r=c+1;r<n;r++)if(Math.abs(A[r][c])>Math.abs(A[p][c]))p=r;
+    if(Math.abs(A[p][c])<1e-12)return{det:0,inv:null};
+    if(p!==c){[A[p],A[c]]=[A[c],A[p]];[I[p],I[c]]=[I[c],I[p]];det=-det}
+    const pv=A[c][c];det*=pv;
+    for(let j=0;j<n;j++){A[c][j]/=pv;I[c][j]/=pv}
+    for(let r=0;r<n;r++)if(r!==c){const f=A[r][c];if(f)for(let j=0;j<n;j++){A[r][j]-=f*A[c][j];I[r][j]-=f*I[c][j]}}}
+  return{det:Math.round(det*1e10)/1e10,inv:M(n,n,[].concat(...I))}}
+const dims=a=>isS(a)?[1,a.s.length]:[a.r,a.c];
+const FN={
+  pi:()=>sc(Math.PI),e:()=>sc(Math.E),Inf:()=>sc(Infinity),inf:()=>sc(Infinity),NaN:()=>sc(NaN),true:()=>sc(1),false:()=>sc(0),eps:()=>sc(2.220446049250313e-16),
+  zeros:(r,c)=>fill(r,c,0),ones:(r,c)=>fill(r,c,1),
+  eye:(r,c)=>{const m=fill(r,c,0);for(let i=0;i<Math.min(m.r,m.c);i++)m.d[i*m.c+i]=1;return m},
+  rand:(r,c)=>{const m=fill(r,c,0);m.d=m.d.map(()=>Math.random());return m},
+  randi:(mx,r,c)=>{const m=fill(r,c,0),hi=mx.d[mx.d.length-1],lo=mx.d.length>1?mx.d[0]:1;m.d=m.d.map(()=>lo+Math.floor(Math.random()*(hi-lo+1)));return m},
+  size:(a,k)=>{const[r,c]=dims(a);return k?sc(k.d[0]===1?r:c):M(1,2,[r,c])},
+  length:a=>{const[r,c]=dims(a);return sc(r*c?Math.max(r,c):0)},
+  numel:a=>{const[r,c]=dims(a);return sc(r*c)},
+  isempty:a=>{const[r,c]=dims(a);return sc(r*c===0?1:0)},
+  sum:a=>reduce(a,v=>v.reduce((s,x)=>s+x,0)),
+  prod:a=>reduce(a,v=>v.reduce((s,x)=>s*x,1)),
+  mean:a=>reduce(a,v=>v.length?v.reduce((s,x)=>s+x,0)/v.length:NaN),
+  max:(a,b)=>b?ew(a,b,Math.max):reduce(a,v=>Math.max(...v)),
+  min:(a,b)=>b?ew(a,b,Math.min):reduce(a,v=>Math.min(...v)),
+  abs:m1(Math.abs),sqrt:m1(Math.sqrt),sin:m1(Math.sin),cos:m1(Math.cos),tan:m1(Math.tan),exp:m1(Math.exp),log:m1(Math.log),log10:m1(Math.log10),
+  floor:m1(Math.floor),ceil:m1(Math.ceil),fix:m1(Math.trunc),round:m1(x=>Math.sign(x)*Math.round(Math.abs(x))),
+  mod:(a,b)=>ew(a,b,(x,y)=>y===0?x:x-Math.floor(x/y)*y),
+  rem:(a,b)=>ew(a,b,(x,y)=>x%y),
+  linspace:(a,b,n)=>{const N=n?n.d[0]:100,s=a.d[0],e=b.d[0];return M(1,N,Array.from({length:N},(_,i)=>N===1?e:s+(e-s)*i/(N-1)))},
+  sort:a=>{if(a.r>1&&a.c>1)err("sort supports vectors only.");return M(a.r,a.c,a.d.slice().sort((x,y)=>x-y))},
+  find:a=>{const d=[];a.d.forEach((x,i)=>{if(x!==0)d.push(i+1)});return a.c===1&&a.r>1?M(d.length,1,d):M(1,d.length,d)},
+  det:a=>sc(gj(a).det),
+  inv:a=>{const g=gj(a);if(!g.inv)err("Matrix is singular to working precision.");return g.inv},
+  transpose:a=>{const d=[];for(let j=0;j<a.c;j++)for(let i=0;i<a.r;i++)d.push(a.d[i*a.c+j]);return M(a.c,a.r,d)},
+  num2str:a=>isS(a)?a:S(a.d.map(x=>Number.isInteger(x)?String(x):String(+x.toPrecision(5))).join("  ")),
+  disp:a=>{if(isS(a))outFn(a.s);else if(a.d.length===1)outFn(fmtNum(a.d[0]));else if(a.d.length)outFn(fmtMat(a))},
+  fprintf:(f,...r)=>{outFn(sprintf(f.s,r),"",true)},
+  input:(p,t)=>{
+    if(inputPos>=inputAnswers.length)throw{needInput:true,prompt:p?p.s:""};
+    const r=inputAnswers[inputPos++];
+    outFn((p?p.s:"")+r+"\n","",true);
+    if(t&&t.s==="s")return S(r);
+    if(!r.trim())return M(0,0,[]);
+    try{return ev(parseExpr(r))}catch(e){err("Invalid input. Enter a number or a matrix such as [1 2 3].")}
+  }
+};
+function callFn(n,a){const f=FN[n];if(!f)err("Unrecognized function or variable '"+n+"'.");return f(...a)}
+const NOOP=["grid","hold","figure","close","format","axis","legend","xlabel","ylabel","clc","clear","clearvars"];
+function splitStmts(line){
+  const res=[];let cur="",d=0,q=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(q){cur+=ch;if(ch==="'"){if(line[i+1]==="'"){cur+="'";i++}else q=false}continue}
+    if(ch==="%")break;
+    if(ch==="'"){const pv=line[i-1];if(pv&&/[\w)\]'.]/.test(pv))cur+=ch;else{q=true;cur+=ch}continue}
+    if("([{".includes(ch))d++;
+    if(")]}".includes(ch))d--;
+    if(d===0&&(ch===";"||ch===",")){if(cur.trim())res.push({t:cur.trim(),show:ch===","});cur="";continue}
+    cur+=ch}
+  if(cur.trim())res.push({t:cur.trim(),show:true});
+  return res}
+const word=t=>t.split(/[\s(]/)[0];
+function build(stmts){
+  let i=0;
+  function block(stop){
+    const out=[];
+    while(i<stmts.length){
+      const s=stmts[i],w=word(s.t);
+      if(stop.includes(w))return out;
+      i++;
+      if(w==="for"){
+        const m=/^for\s+(\w+)\s*=\s*(.+)$/.exec(s.t);if(!m)err("Invalid for statement.");
+        const body=block(["end"]);if(!stmts[i])err("Missing end for 'for' statement.");i++;
+        out.push({k:"for",v:m[1],e:m[2],body})}
+      else if(w==="while"){
+        const body=block(["end"]);if(!stmts[i])err("Missing end for 'while' statement.");i++;
+        out.push({k:"while",e:s.t.slice(5),body})}
+      else if(w==="if"){
+        const br=[{e:s.t.slice(2),body:block(["elseif","else","end"])}];let els=null;
+        for(;;){
+          const t=stmts[i];if(!t)err("Missing end for 'if' statement.");i++;
+          const w2=word(t.t);
+          if(w2==="elseif")br.push({e:t.t.slice(6),body:block(["elseif","else","end"])});
+          else if(w2==="else")els=block(["end"]);
+          else break}
+        out.push({k:"if",br,els})}
+      else out.push({k:"s",t:s.t,show:s.show})}
+    return out}
+  return block([])}
+function stmt(t,show){
+  const w=word(t);
+  if(NOOP.includes(w)){if(w==="clc")cwClear();else if(w==="clear"||w==="clearvars")vars={};return}
+  const m=/^([A-Za-z_]\w*)\s*(\(([^'=]*)\))?\s*=(?!=)\s*(.+)$/.exec(t);
+  if(m){
+    const val=ev(parseExpr(m[4]));if(val==null)err("Value must be an array or string.");
+    if(m[2]!==undefined)assignIdx(m[1],parseExpr(m[1]+"("+m[3]+")").a,val);else vars[m[1]]=val;
+    if(show)showVar(m[1],vars[m[1]]);return}
+  const v=ev(parseExpr(t));if(v==null)return;
+  if(/^[A-Za-z_]\w*$/.test(t)&&t in vars){if(show)showVar(t,v)}
+  else{vars.ans=v;if(show)showVar("ans",v)}}
+function exec(blk){
+  for(const b of blk){
+    if(++steps>200000)err("Maximum number of iterations exceeded. Possible infinite loop.");
+    if(b.k==="for"){
+      const r=ev(parseExpr(b.e));if(isS(r))err("for loop over text is not supported.");
+      for(let j=0;j<r.c;j++){const col=[];for(let i=0;i<r.r;i++)col.push(r.d[i*r.c+j]);vars[b.v]=M(r.r,1,col);exec(b.body)}}
+    else if(b.k==="while"){while(truthy(ev(parseExpr(b.e)))){if(++steps>200000)err("Maximum number of iterations exceeded. Possible infinite loop.");exec(b.body)}}
+    else if(b.k==="if"){let done=false;
+      for(const br of b.br)if(truthy(ev(parseExpr(br.e)))){exec(br.body);done=true;break}
+      if(!done&&b.els)exec(b.els)}
+    else stmt(b.t,b.show)}}
+function runCode(src){
+  steps=0;
+  try{const st=[];src.split(/\r?\n/).forEach(l=>st.push(...splitStmts(l)));exec(build(st))}
+  catch(e){if(e&&e.needInput)needIn=e;else outFn(e.message,"e")}}
+/*ENDINTERP*/
 
-    function setMode(m) {
-      mode = m;
-      const login = m === 'login';
-      $('formTitle').textContent = login ? 'ورود' : 'ثبت‌نام';
-      $('submitBtn').textContent = login ? 'ورود' : 'ساخت حساب';
-      $('switchText').textContent = login ? 'حساب نداری؟' : 'قبلاً ثبت‌نام کردی؟';
-      $('switchBtn').textContent = login ? 'ثبت‌نام' : 'ورود';
-      $('password').autocomplete = login ? 'current-password' : 'new-password';
-      $('userHint').hidden = login;
-      $('passHint').hidden = login;
-      msg('');
-    }
+/* ===== UI ===== */
+const $=id=>document.getElementById(id);
+const out=$("out"),cmd=$("cmd"),cw=$("cw"),ta=$("ta"),PR=document.querySelector(".prompt i"),KEY="matlab-site-code";
+const STARTER=`% ماتریس‌ها
+A = [1 2 3; 4 5 6; 7 8 10]
+B = A'
+C = A * B;
+disp(C)
+d = det(A)
 
-    function friendlyError(error) {
-      const m = (error.message || '').toLowerCase();
-      if (m.includes('invalid login')) return 'نام کاربری یا رمز عبور اشتباهه.';
-      if (m.includes('already registered') || m.includes('already been registered')) return 'این نام کاربری قبلاً گرفته شده. یکی دیگه انتخاب کن.';
-      if (m.includes('rate limit') || m.includes('too many')) return 'تلاش‌های زیاد. چند دقیقه بعد دوباره امتحان کن.';
-      if (m.includes('email not confirmed')) return 'تأیید ایمیل توی Supabase خاموش نیست؛ باید خاموشش کنی.';
-      return 'مشکلی پیش اومد. دوباره تلاش کن.';
-    }
+% حلقه و شرط
+total = 0;
+for k = 1:10
+    if mod(k,2) == 0
+        total = total + k;
+    end
+end
+fprintf('مجموع اعداد زوج: %d\\n', total);
 
-    async function submit() {
-      const username = $('username').value;
-      const password = $('password').value;
-
-      // در ثبت‌نام قوانین کامل چک می‌شه؛ در ورود فقط خالی نبودن
-      const uErr = mode === 'signup' ? validateUsername(username) : (normalizeUsername(username) ? '' : 'نام کاربری رو وارد کن.');
-      if (uErr) { msg(uErr); return; }
-      const pErr = mode === 'signup' ? validatePassword(password) : (password ? '' : 'رمز عبور رو وارد کن.');
-      if (pErr) { msg(pErr); return; }
-
-      $('submitBtn').disabled = true;
-      msg('');
-
-      const email = await usernameToEmail(username);
-
-      if (mode === 'login') {
-        const { error } = await db.auth.signInWithPassword({ email, password });
-        if (error) { msg(friendlyError(error)); $('submitBtn').disabled = false; return; }
-        await afterLogin();
-      } else {
-        const { data, error } = await db.auth.signUp({ email, password });
-        if (error) { msg(friendlyError(error)); $('submitBtn').disabled = false; return; }
-        // اگه کاربر تکراری باشه و تأیید ایمیل خاموش باشه، Supabase خطا می‌ده؛ در غیر این‌صورت session هست
-        if (!data.session) {
-          msg('حساب ساخته نشد. تأیید ایمیل (Confirm email) توی Supabase باید خاموش باشه.');
-          $('submitBtn').disabled = false;
-          return;
-        }
-        await afterLogin();
-      }
-    }
-
-    $('submitBtn').addEventListener('click', submit);
-    $('authForm').addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
-    $('switchBtn').addEventListener('click', () => setMode(mode === 'login' ? 'signup' : 'login'));
-
-    // اگه از قبل لاگین بود، مستقیم مسیریابی کن
-    db.auth.getSession().then(({ data }) => { if (data.session) afterLogin(); });
-  </script>
+% ورودی
+name = input('اسمت چیه؟ ', 's');
+fprintf('سلام %s!\\n', name);`;
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function cmtIdx(l){let q=false;
+  for(let i=0;i<l.length;i++){const c=l[i];
+    if(c==="'"){if(q)q=false;else if(!(l[i-1]&&/[\w)\]'.]/.test(l[i-1])))q=true}
+    else if(c==="%"&&!q)return i}
+  return -1}
+function hl(line){
+  const i=cmtIdx(line);let code=line,cm="";
+  if(i>=0){code=line.slice(0,i);cm=line.slice(i)}
+  let h=esc(code).replace(/('[^']*')/g,'<span class="s">$1</span>');
+  h=h.replace(/(<span class="s">.*?<\/span>)|(\b\d+(\.\d+)?\b)|\b(for|end|if|else|elseif|while|break|function)\b/g,(m,a,b,_,d)=>a?a:b?'<span class="n">'+b+'</span>':'<span class="k">'+d+'</span>');
+  return h+(cm?'<span class="c">'+esc(cm)+'</span>':"")}
+function paint(){
+  const L=ta.value.split("\n");
+  $("hlp").innerHTML=L.map(hl).join("\n")+"\n";
+  $("gut").textContent=L.map((_,i)=>i+1).join("\n");
+  $("hlp").scrollTop=ta.scrollTop;$("hlp").scrollLeft=ta.scrollLeft;$("gut").scrollTop=ta.scrollTop}
+let saved=null;try{saved=localStorage.getItem(KEY)}catch(e){}
+ta.value=saved!==null?saved:STARTER;
+let dirty=false,fh=null,lastMod=0;
+ta.addEventListener("input",()=>{dirty=true;try{localStorage.setItem(KEY,ta.value)}catch(e){}paint()});
+ta.addEventListener("scroll",paint);
+ta.addEventListener("keydown",e=>{
+  if((e.key==="Enter"&&(e.ctrlKey||e.metaKey))||e.key==="F5"){e.preventDefault();runEditor()}
+  if(e.key==="s"&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveFile()}});
+let openSpan=null;
+function print(t,cls,inline){
+  if(inline){
+    const nl=t.endsWith("\n"),txt=nl?t.slice(0,-1):t;
+    if(openSpan)openSpan.textContent+=txt;
+    else{openSpan=document.createElement("span");openSpan.className="o";openSpan.textContent=txt;out.appendChild(openSpan)}
+    if(nl)openSpan=null;
+  }else{openSpan=null;const d=document.createElement("span");d.className="o "+(cls||"");d.textContent=t;out.appendChild(d)}
+  cw.scrollTop=cw.scrollHeight}
+outFn=print;cwClear=()=>{out.innerHTML="";openSpan=null};
+function updateWs(){
+  const tb=$("ws");tb.innerHTML="";
+  const ks=Object.keys(vars);
+  ks.forEach(k=>{
+    const v=vars[k],tr=document.createElement("tr");
+    const val=isS(v)?"'"+v.s+"'":v.d.length===1?fmtNum(v.d[0]):v.r+"×"+v.c+" double";
+    [k,val].forEach(x=>{const td=document.createElement("td");td.textContent=x;tr.appendChild(td)});tb.appendChild(tr)});
+  if(!ks.length)tb.innerHTML='<tr><td colspan="2" style="color:var(--muted)">(empty)</td></tr>'}
+let awaiting=null;
+function runScript(src){
+  awaiting=null;PR.textContent=">>";cmd.placeholder="help";
+  const snap={...vars},mark=out.childNodes.length,answers=[];
+  (function attempt(){
+    vars={...snap};
+    while(out.childNodes.length>mark)out.removeChild(out.lastChild);
+    openSpan=null;inputAnswers=answers;inputPos=0;needIn=null;
+    runCode(src);
+    if(needIn){
+      const q=needIn;needIn=null;
+      PR.textContent=q.prompt||"?";cmd.placeholder="";cmd.focus();
+      awaiting=v=>{answers.push(v);attempt()};
+      cw.scrollTop=cw.scrollHeight;return}
+    updateWs()})()}
+function runEditor(){print(">> run","m");runScript(ta.value)}
+function runCmd(raw){
+  const c=raw.trim();if(!c)return;
+  print(">> "+c,"m");
+  if(c==="help"){print("Write code in the Editor and press Run (F5), or type commands here.\nExamples:\n  A = [1 2; 3 4]\n  B = A * A'\n  x = 1:5;  disp(x)\n  for k = 1:3, disp(k), end\n  fprintf('%d\\n', 5)");return}
+  runScript(c)}
+cmd.addEventListener("keydown",e=>{
+  if(e.key!=="Enter")return;
+  const v=cmd.value;cmd.value="";
+  if(awaiting){const f=awaiting;awaiting=null;PR.textContent=">>";f(v)}else runCmd(v)});
+$("run").onclick=runEditor;
+async function download(){
+  const st=$("st");
+  try{
+    const d=typeof claude!=="undefined"?await claude.use("downloads"):null;
+    if(!d){
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(new Blob([ta.value],{type:"text/plain"}));
+      a.download="script.m";document.body.appendChild(a);a.click();a.remove();
+      st.textContent="Downloaded script.m";return}
+    await d.save({filename:"script.txt",data:ta.value});
+    st.textContent="Downloaded script.txt (rename it to script.m)";
+  }catch(e){st.textContent=e&&e.code==="declined"?"Download cancelled":"Download is not available here"}}
+const say=t=>{$("st").textContent=t};
+function setText(t,name){ta.value=t;$("fname").textContent=name;dirty=false;try{localStorage.setItem(KEY,t)}catch(e){}paint()}
+const PICK={types:[{description:"MATLAB / text",accept:{"text/plain":[".m",".txt"]}}]};
+async function openFile(){
+  if(window.showOpenFilePicker){
+    try{
+      const [h]=await showOpenFilePicker(PICK);
+      const f=await h.getFile();fh=h;lastMod=f.lastModified;
+      setText(await f.text(),h.name);say("Opened "+h.name+". Save writes back to this same file.");return;
+    }catch(e){if(e&&e.name==="AbortError")return}
+  }
+  $("fin").click()}
+$("fin").addEventListener("change",async e=>{
+  const f=e.target.files[0];if(!f)return;
+  fh=null;setText(await f.text(),f.name);say("Opened "+f.name+". Save will download a copy.");e.target.value=""});
+async function saveFile(){
+  try{
+    if(!fh&&window.showSaveFilePicker){
+      fh=await showSaveFilePicker({suggestedName:$("fname").textContent||"script.m",...PICK});
+      $("fname").textContent=fh.name}
+    if(fh){
+      const w=await fh.createWritable();await w.write(ta.value);await w.close();
+      lastMod=(await fh.getFile()).lastModified;dirty=false;say("Saved to "+fh.name);return}
+  }catch(e){if(e&&e.name==="AbortError")return;fh=null}
+  download()}
+window.addEventListener("focus",async()=>{
+  if(!fh||dirty)return;
+  try{const f=await fh.getFile();
+    if(f.lastModified!==lastMod){lastMod=f.lastModified;setText(await f.text(),fh.name);say("Reloaded changes from "+fh.name)}}catch(e){}});
+$("bopen").onclick=openFile;$("bsave").onclick=saveFile;$("bdl").onclick=download;
+document.querySelectorAll("[data-cmd]").forEach(b=>b.onclick=()=>runCmd(b.dataset.cmd));
+$("theme").onclick=()=>{const r=document.documentElement;r.dataset.theme=getComputedStyle(r).colorScheme==="dark"?"light":"dark"};
+paint();updateWs();
+print("کد را در ویرایشگر بنویسید و Run (یا F5) را بزنید. برای راهنما بنویسید: help");
+</script>
 </body>
 </html>
